@@ -1,16 +1,16 @@
 {
   "name": "gitdoc",
   "displayName": "GitDoc",
-  "publisher": "vsls-contrib",
+  "publisher": "DasBossGit",
   "icon": "images/icon.png",
   "description": "Automatically commit/push/pull changes on save, so you can edit a Git repo like a multi-file, versioned document.",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "extensionKind": [
     "workspace"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/lostintangent/gitdoc.git"
+    "url": "https://github.com/DasBossGit/gitdoc.git"
   },
   "engines": {
     "vscode": "^1.90.0"
@@ -252,5 +252,6 @@
     "luxon": "^2.0.2",
     "minimatch": "^3.0.4",
     "mobx": "^5.14.2"
-  }
+  },
+  "packageManager": "pnpm@9.8.0+sha512.8e4c3550fb500e808dbc30bb0ce4dd1eb614e30b1c55245f211591ec2cdf9c611cabd34e1364b42f564bd54b3945ed0f49d61d1bbf2ec9bd74b866fcdc723276"
 }
