@@ -5,6 +5,7 @@ import { DateTime } from "luxon";
 import { store } from "./store";
 import { reaction } from "mobx";
 import * as minimatch from "minimatch";
+import { EXTENSION_LOG_FMT } from "./constants";
 
 const REMOTE_NAME = "origin";
 
@@ -12,11 +13,16 @@ async function pushRepository(
 	repository: Repository,
 	forcePush: boolean = false
 ) {
-	if (!(await hasRemotes(repository))) return;
+	if (!(await hasRemotes(repository))) {
+		console.log(EXTENSION_LOG_FMT, "No remotes found, aborting push...");
+		return;
+	}
 
 	store.isPushing = true;
 
 	try {
+		console.log(EXTENSION_LOG_FMT, "Pushing changes...");
+
 		if (config.autoPull === "onPush") {
 			await pullRepository(repository);
 		}
@@ -40,6 +46,8 @@ async function pushRepository(
 
 		await repository.push(...pushArgs);
 
+		console.log(EXTENSION_LOG_FMT, "Changes pushed.");
+
 		store.isPushing = false;
 	} catch {
 		store.isPushing = false;
@@ -50,17 +58,25 @@ async function pushRepository(
 				"Force Push"
 			)
 		) {
+			console.log(EXTENSION_LOG_FMT, "Forcing push...");
 			await pushRepository(repository, true);
 		}
 	}
 }
 
 async function pullRepository(repository: Repository) {
-	if (!(await hasRemotes(repository))) return;
+	if (!(await hasRemotes(repository))) {
+		console.log(EXTENSION_LOG_FMT, "No remotes found, aborting pull...");
+		return;
+	}
 
 	store.isPulling = true;
 
+	console.log(EXTENSION_LOG_FMT, "Pulling changes...");
+
 	await repository.pull();
+
+	console.log(EXTENSION_LOG_FMT, "Changes pulled.");
 
 	store.isPulling = false;
 }
@@ -71,19 +87,32 @@ async function hasRemotes(repository: Repository): Promise<boolean> {
 }
 
 function matches(uri: vscode.Uri) {
-	return minimatch(uri.path, config.filePattern, { dot: true });
+	console.log(
+		EXTENSION_LOG_FMT,
+		"Checking if URI matches file pattern [%s]...",
+		uri.path
+	);
+	return (
+		minimatch(uri.path, config.filePattern, { dot: true }) ||
+		minimatch(uri.fsPath, config.filePattern, { dot: true })
+	);
 }
 
 async function generateCommitMessage(
 	repository: Repository,
 	changedUris: vscode.Uri[]
 ): Promise<string | null> {
+	console.log(EXTENSION_LOG_FMT, "AI generating commit message...");
 	const diffs = await Promise.all(
 		changedUris.map(async (uri) => {
 			const relativeFilePath = vscode.workspace.asRelativePath(uri);
 			const absoluteFilePath = uri.fsPath;
-			console.log(relativeFilePath);
-			console.log(absoluteFilePath);
+			console.log(
+				EXTENSION_LOG_FMT,
+				"Changes found in file [%s] [%s]",
+				relativeFilePath,
+				absoluteFilePath
+			);
 			let out = null;
 			try {
 				//check if file exist
@@ -97,7 +126,7 @@ async function generateCommitMessage(
 ---
 ${fileDiff}`;
 			} catch (e) {
-				console.error(e);
+				console.error(EXTENSION_LOG_FMT, e);
 			}
 			if (out) return out;
 			return `## ${relativeFilePath}
@@ -106,8 +135,23 @@ Error: Unable to generate diff for this file.`;
 		})
 	);
 
+	console.log(EXTENSION_LOG_FMT, "Selecting AI model...");
+
 	const model = await vscode.lm.selectChatModels({ family: config.aiModel });
-	if (!model || model.length === 0) return null;
+	if (!model || model.length === 0) {
+		console.error(EXTENSION_LOG_FMT, "No AI model found.");
+		await vscode.window.showWarningMessage(
+
+			("AI model not found, unable to generate commit message with " + config.aiModel),
+			{
+				detail: 'Check for updates on the GitHub Copilot extension and or copilot subscription.',
+				modal: true
+			}
+
+		);
+
+		return null;
+	}
 
 	const prompt = `# Instructions
 
@@ -119,26 +163,26 @@ You are a developer working on a project that uses Git for version control. You 
 * When multiple files have been changed, give priority to edited files, followed by added files, and then renamed/deleted files.
 * When a change includes adding an emoji to a list item in markdown, then interpret a runner emoji as marking it as in progress, a checkmark emoji as meaning its completed, and a muscle emoji as meaning its a stretch goal.
 * The only exception to the above rule is when the the changes read ´Error: Unable to generate diff for this file.´, in which case you shall NOT mention that the file could not be diffed.
-${
-	config.aiUseEmojis
-		? "* Prepend an emoji to the message that expresses the nature of the changes, and is as specific/relevant to the subject and/or action of the changes as possible.\n"
-		: ""
-}
+${config.aiUseEmojis
+			? "* Prepend an emoji to the message that expresses the nature of the changes, and is as specific/relevant to the subject and/or action of the changes as possible.\n"
+			: ""
+		}
 # Code change diffs
 
 ${diffs.join("\n\n")}
 
-${
-	config.aiCustomInstructions
-		? `# Additional Instructions (Important!)
+${config.aiCustomInstructions
+			? `# Additional Instructions (Important!)
 
 ${config.aiCustomInstructions}
 `
-		: ""
-}
+			: ""
+		}
 # Commit message
 
 `;
+
+	console.log(EXTENSION_LOG_FMT, "Sending request...");
 
 	const response = await model[0].sendRequest([
 		{
@@ -159,86 +203,122 @@ ${config.aiCustomInstructions}
 export async function commit(repository: Repository, message?: string) {
 	// This function shouldn't ever be called when GitDoc
 	// is disabled, but we're checking it just in case.
-	if (store.enabled === false) return;
+	try {
+		if (store.enabled === false || store.isPushing) return;
 
-	const changes = [
-		...repository.state.workingTreeChanges,
-		...repository.state.mergeChanges,
-		...repository.state.indexChanges,
-	];
+		store.isPushing = true;
 
-	if (changes.length === 0) return;
+		console.log(EXTENSION_LOG_FMT, "Committing changes...");
 
-	const changedUris = changes
-		.filter((change) => matches(change.uri))
-		.map((change) => change.uri);
+		const changes = [
+			...repository.state.workingTreeChanges,
+			...repository.state.mergeChanges,
+			...repository.state.indexChanges,
+		];
 
-	if (changedUris.length === 0) return;
-
-	if (config.commitValidationLevel !== "none") {
-		const diagnostics = vscode.languages
-			.getDiagnostics()
-			.filter(([uri, diagnostics]) => {
-				const isChanged = changedUris.find(
-					(changedUri) =>
-						changedUri.toString().localeCompare(uri.toString()) ===
-						0
-				);
-
-				return isChanged
-					? diagnostics.some(
-							(diagnostic) =>
-								diagnostic.severity ===
-									vscode.DiagnosticSeverity.Error ||
-								(config.commitValidationLevel === "warning" &&
-									diagnostic.severity ===
-										vscode.DiagnosticSeverity.Warning)
-					  )
-					: false;
-			});
-
-		if (diagnostics.length > 0) {
+		if (changes.length === 0) {
+			console.log(EXTENSION_LOG_FMT, "No changes to commit.");
+			store.isPushing = false;
 			return;
 		}
-	}
 
-	let currentTime = DateTime.now();
+		const changedUris = changes
+			.filter((change) => matches(change.uri))
+			.map((change) => change.uri);
 
-	// Ensure that the commit dates are formatted
-	// as UTC, so that other clients can properly
-	// re-offset them based on the user's locale.
-	const commitDate = currentTime.toUTC().toString();
-	process.env.GIT_AUTHOR_DATE = commitDate;
-	process.env.GIT_COMMITTER_DATE = commitDate;
-
-	if (config.timeZone) {
-		currentTime = currentTime.setZone(config.timeZone);
-	}
-
-	let commitMessage =
-		message || currentTime.toFormat(config.commitMessageFormat);
-
-	if (config.aiEnabled) {
-		const aiMessage = await generateCommitMessage(repository, changedUris);
-		if (aiMessage) {
-			commitMessage = aiMessage;
+		if (changedUris.length === 0) {
+			console.log(EXTENSION_LOG_FMT, "No changes to commit.");
+			store.isPushing = false;
+			return;
 		}
-	}
 
-	await repository.commit(commitMessage, {
-		all: true,
-		noVerify: config.noVerify,
-	});
+		if (config.commitValidationLevel !== "none") {
+			console.log(
+				EXTENSION_LOG_FMT,
+				"Checking cahnges against validation level..."
+			);
+			const diagnostics = vscode.languages
+				.getDiagnostics()
+				.filter(([uri, diagnostics]) => {
+					const isChanged = changedUris.find(
+						(changedUri) =>
+							changedUri.toString().localeCompare(uri.toString()) ===
+							0
+					);
 
-	delete process.env.GIT_AUTHOR_DATE;
-	delete process.env.GIT_COMMITTER_DATE;
+					return isChanged
+						? diagnostics.some(
+							(diagnostic) =>
+								diagnostic.severity ===
+								vscode.DiagnosticSeverity.Error ||
+								(config.commitValidationLevel === "warning" &&
+									diagnostic.severity ===
+									vscode.DiagnosticSeverity.Warning)
+						)
+						: false;
+				});
 
-	if (config.autoPush === "onCommit") {
-		await pushRepository(repository);
-	}
+			if (diagnostics.length > 0) {
+				store.isPushing = false;
+				console.log(
+					EXTENSION_LOG_FMT,
+					"Changes contain errors or warnings, aborting commit..."
+				);
+				return;
+			}
+		}
 
-	if (config.autoPull === "onCommit") {
-		await pullRepository(repository);
+		let currentTime = DateTime.now();
+
+		// Ensure that the commit dates are formatted
+		// as UTC, so that other clients can properly
+		// re-offset them based on the user's locale.
+		const commitDate = currentTime.toUTC().toString();
+		process.env.GIT_AUTHOR_DATE = commitDate;
+		process.env.GIT_COMMITTER_DATE = commitDate;
+
+		if (config.timeZone) {
+			currentTime = currentTime.setZone(config.timeZone);
+		}
+
+		console.log(EXTENSION_LOG_FMT, "Formatting commit message...");
+
+		let commitMessage =
+			message || currentTime.toFormat(config.commitMessageFormat);
+
+		if (config.aiEnabled) {
+			const aiMessage = await generateCommitMessage(repository, changedUris);
+			if (aiMessage) {
+				commitMessage = aiMessage;
+			}
+		}
+
+		console.log(EXTENSION_LOG_FMT, "Committing changes...");
+
+		await repository.commit(commitMessage, {
+			all: true,
+			noVerify: config.noVerify,
+		});
+
+		delete process.env.GIT_AUTHOR_DATE;
+		delete process.env.GIT_COMMITTER_DATE;
+
+		console.log("Changes committed.");
+
+		if (config.autoPush === "onCommit") {
+			console.log("Pushing changes...");
+			await pushRepository(repository);
+		}
+
+		if (config.autoPull === "onCommit") {
+			console.log("Pulling changes...");
+			await pullRepository(repository);
+		}
+		store.isPushing = false;
+	} catch (e) {
+		console.error(EXTENSION_LOG_FMT, e);
+		store.isPushing = false;
+		throw e;
 	}
 }
 
@@ -246,11 +326,15 @@ export async function commit(repository: Repository, message?: string) {
 function debounce(fn: Function, delay: number) {
 	let timeout: NodeJS.Timeout | null = null;
 
+	console.log("Creating new debounced function...");
+
 	return (...args: any[]) => {
 		if (timeout) {
+			console.log("Clearing existing timeout...");
 			clearTimeout(timeout);
 		}
 
+		console.log("Setting new timeout (%s)...", delay);
 		timeout = setTimeout(() => {
 			fn(...args);
 		}, delay);
@@ -259,7 +343,9 @@ function debounce(fn: Function, delay: number) {
 
 const commitMap = new Map();
 function debouncedCommit(repository: Repository) {
+	console.log("Debouncing commit...");
 	if (!commitMap.has(repository)) {
+		console.log("Creating new <anonym> debounced commit function...");
 		commitMap.set(
 			repository,
 			debounce(() => commit(repository), config.autoCommitDelay)
@@ -271,9 +357,13 @@ function debouncedCommit(repository: Repository) {
 
 let statusBarItem: vscode.StatusBarItem | null = null;
 export function ensureStatusBarItem() {
+	console.log("Ensuring status bar item exists...");
+
 	if (!statusBarItem) {
+		console.log("Creating new status bar item...");
 		statusBarItem = vscode.window.createStatusBarItem(
-			vscode.StatusBarAlignment.Left
+			vscode.StatusBarAlignment.Left,
+			-100
 		);
 
 		statusBarItem.text = "$(mirror)";
@@ -287,6 +377,7 @@ export function ensureStatusBarItem() {
 
 let disposables: vscode.Disposable[] = [];
 export function watchForChanges(git: GitAPI): vscode.Disposable {
+	console.log(EXTENSION_LOG_FMT, "Starting Watcher...");
 	const commitAfterDelay = debouncedCommit(git.repositories[0]);
 	disposables.push(git.repositories[0].state.onDidChange(commitAfterDelay));
 
@@ -318,6 +409,11 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 		},
 	});
 
+	console.log(
+		EXTENSION_LOG_FMT,
+		"Registering repository push/pull timeouts..."
+	);
+
 	if (config.autoPush === "afterDelay") {
 		const interval = setInterval(async () => {
 			pushRepository(git.repositories[0]);
@@ -347,8 +443,8 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 			const suffix = store.isPushing
 				? " (Pushing...)"
 				: store.isPulling
-				? " (Pulling...)"
-				: "";
+					? " (Pulling...)"
+					: "";
 			statusBarItem!.text = `$(mirror)${suffix}`;
 		}
 	);
@@ -361,6 +457,7 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 		pullRepository(git.repositories[0]);
 	}
 
+	console.log(EXTENSION_LOG_FMT, "Watcher started");
 	return {
 		dispose: () => {
 			disposables.forEach((disposable) => disposable.dispose());

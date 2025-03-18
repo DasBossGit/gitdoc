@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { EXTENSION_LOG_FMT } from "./constants";
 
 const DEFAULT_DELAY_MS = 30000;
 const ENABLED_KEY = "enabled";
@@ -9,6 +10,7 @@ export type CommitValidationLevel = "error" | "warning" | "none";
 export type PushMode = "forcePush" | "forcePushWithLease" | "push";
 
 function config() {
+  console.log(EXTENSION_LOG_FMT, "Retrieving configuration");
   return vscode.workspace.getConfiguration("gitdoc");
 }
 

@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { EXTENSION_LOG_FMT } from "./constants";
 
 interface CommitOptions {
   all?: boolean | "tracked";
@@ -69,11 +70,19 @@ export interface GitAPI {
 export async function getGitApi(): Promise<GitAPI | undefined> {
   const extension = vscode.extensions.getExtension("vscode.git");
   if (!extension) {
-    return;
+    {
+      console.error(EXTENSION_LOG_FMT, "Git extension not found");
+      return
+    };
   }
 
   if (!extension.isActive) {
-    await extension.activate();
+    try {
+      await extension.activate()
+    } catch (error) {
+      console.error(EXTENSION_LOG_FMT, "Git extension failed to activate");
+      throw error;
+    };
   }
 
   return extension.exports.getAPI(1);

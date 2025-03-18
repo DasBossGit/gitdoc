@@ -4,4 +4,5 @@ export const store = observable({
 	enabled: false,
 	isPulling: false,
 	isPushing: false,
+	isCommitting: false,
 });
