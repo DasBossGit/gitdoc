@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as winston from "winston";
 import * as windowsTransportVscode from "winston-transport-vscode";
+import { EXTENSION_NAME } from "./constants";
 
 
 export const logger = createLogger();
@@ -8,7 +9,7 @@ export const logger = createLogger();
 export function createLogger() {
     try {
         // 2. Create a Log Output Channel for your extension with the VS Code API
-        const outputChannel = vscode.window.createOutputChannel('EXTENSION_NAME', {
+        const outputChannel = vscode.window.createOutputChannel(EXTENSION_NAME, {
             log: true,
         });
 
