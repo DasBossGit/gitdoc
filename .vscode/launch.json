@@ -17,10 +17,10 @@
 				"ExtensionHost Testing",
 			],
 			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
+				"${workspaceFolder}/dist/**/*.js"
 			],
 			"preLaunchTask": "npm: watch",
-			"showAsyncStacks": true,
+			/* "showAsyncStacks": true,
 			"smartStep": true,
 			"debugWebviews": true,
 			"timeouts": {
@@ -31,7 +31,7 @@
 			"trace": true,
 			"debugWebWorkerHost": true,
 			"enableDWARF": true,
-			"enableContentValidation": true,
+			"enableContentValidation": true, */
 		},
 		{
 			"name": "Extension Tests",
