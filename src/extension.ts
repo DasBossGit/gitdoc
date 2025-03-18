@@ -6,40 +6,12 @@ import { getGitApi, GitAPI, RefType } from "./git";
 import { store } from "./store";
 import { commit, watchForChanges, ensureStatusBarItem } from "./watcher";
 import { updateContext } from "./utils";
-import { EXTENSION_LOG_FMT, EXTENSION_NAME } from "./constants";
-/* import * as winston from "winston";
-import * as winstonTransport from "winston-transport";
-import * as windowsTransportVscode from "winston-transport-vscode"; */
-
-
-try {
-	// 1. Require (or import)
-	const vscode = require('vscode');
-	const winston = require('winston');
-	const { LogOutputChannelTransport } = require('winston-transport-vscode');
-
-	// 2. Create a Log Output Channel for your extension with the VS Code API
-	const outputChannel = vscode.window.createOutputChannel('EXTENSION_NAME', {
-		log: true,
-	});
-
-	// 3. Create the Winston logger giving it the Log Output Channel
-	const logger = winston.createLogger({
-		level: 'trace', // Recommended: set the highest possible level
-		levels: LogOutputChannelTransport.config.levels, // Recommended: use predefined VS Code log levels
-		format: LogOutputChannelTransport.format(), // Recommended: use predefined format
-		transports: [new LogOutputChannelTransport({ outputChannel })],
-	});
-
-	logger.info('Hello World!');
-}
-catch (error) {
-	console.error("Error creating logger:", error);
-	throw error;
-}
+import { EXTENSION_LOG_FMT } from "./constants";
+import { createLogger } from "./logger";
 
 export async function activate(context: vscode.ExtensionContext) {
-	/* logger.info('Hello World!'); */
+	createLogger();
+	logger.info('Hello World!');
 
 
 	const git = await getGitApi();
