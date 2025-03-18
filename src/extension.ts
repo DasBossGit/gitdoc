@@ -11,9 +11,7 @@ import { logger } from "./logger";
 
 
 export async function activate(context: vscode.ExtensionContext) {
-	logger.info('Hello World!');
-
-	console.log(EXTENSION_LOG_FMT, "Activating...");
+	logger.log(EXTENSION_LOG_FMT, "Activating...");
 
 	const git = await getGitApi();
 	if (!git) {

@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as winston from "winston";
 import * as windowsTransportVscode from "winston-transport-vscode";
-import { EXTENSION_NAME } from "./constants";
+import { EXTENSION_LOG_FMT, EXTENSION_NAME } from "./constants";
 
 
 export const logger = createLogger();
@@ -18,13 +18,14 @@ export function createLogger() {
             level: 'trace', // Recommended: set the highest possible level
             levels: windowsTransportVscode.LogOutputChannelTransport.config.levels, // Recommended: use predefined VS Code log levels
             format: windowsTransportVscode.LogOutputChannelTransport.format(), // Recommended: use predefined format
+            // @ts-ignore
             transports: [new windowsTransportVscode.LogOutputChannelTransport({ outputChannel })],
         });
 
         return logger;
     }
     catch (error) {
-        console.error("Error creating logger:", error);
+        console.error(EXTENSION_LOG_FMT, "Error creating logger:", error);
         throw error;
     }
 }
