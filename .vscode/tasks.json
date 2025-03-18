@@ -4,17 +4,30 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "npm-watch",
 			"type": "npm",
-			"script": "webpack",
-			"problemMatcher": "$tsc-watch",
+			"script": "webpack --watch --mode development --devtool hidden-source-map",
+			"problemMatcher": {
+				"base": "$ts-webpack-watch",
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": {
+						"regexp": "."
+					},
+					"endsPattern": {
+						"regexp": "webpack [\\d.]+ compiled"
+					}
+				},
+			},
 			"isBackground": true,
+			/*
 			"presentation": {
 				"reveal": "never"
 			},
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			}
+			} */
 		},
 	]
 }
