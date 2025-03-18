@@ -58,7 +58,7 @@ async function pushRepository(
 				"Force Push"
 			)
 		) {
-			logger.info("Forcing push...");
+			logger.debug("Forcing push...");
 			await pushRepository(repository, true);
 		}
 	}
@@ -100,7 +100,7 @@ async function generateCommitMessage(
 	repository: Repository,
 	changedUris: vscode.Uri[]
 ): Promise<string | null> {
-	logger.info("AI generating commit message...");
+	logger.debug("AI generating commit message...");
 	const diffs = await Promise.all(
 		changedUris.map(async (uri) => {
 			const relativeFilePath = vscode.workspace.asRelativePath(uri);
@@ -130,7 +130,7 @@ Error: Unable to generate diff for this file.`;
 		})
 	);
 
-	logger.info("Selecting AI model...");
+	logger.debug("Selecting AI model...");
 
 	const model = await vscode.lm.selectChatModels({ family: config.aiModel });
 	if (!model || model.length === 0) {
@@ -177,7 +177,7 @@ ${config.aiCustomInstructions}
 
 `;
 
-	logger.info("Sending request...");
+	logger.debug("Sending request...");
 
 	const response = await model[0].sendRequest([
 		{
@@ -228,7 +228,7 @@ export async function commit(repository: Repository, message?: string) {
 		}
 
 		if (config.commitValidationLevel !== "none") {
-			logger.info(
+			logger.debug(
 				"Checking cahnges against validation level..."
 			);
 			const diagnostics = vscode.languages
@@ -274,7 +274,7 @@ export async function commit(repository: Repository, message?: string) {
 			currentTime = currentTime.setZone(config.timeZone);
 		}
 
-		logger.info("Formatting commit message...");
+		logger.debug("Formatting commit message...");
 
 		let commitMessage =
 			message || currentTime.toFormat(config.commitMessageFormat);
@@ -319,16 +319,16 @@ export async function commit(repository: Repository, message?: string) {
 function debounce(fn: Function, delay: number) {
 	let timeout: NodeJS.Timeout | null = null;
 
-	logger.info("Creating new debounced function...");
+	logger.debug("Creating new debounced function...");
 
 	return (...args: any[]) => {
 		if (timeout) {
-			logger.info("Clearing existing timeout...");
+			logger.debug("Clearing existing timeout...");
 			clearTimeout(timeout);
 
 		}
 
-		logger.info(`Setting new timeout (${delay})...`);
+		logger.debug(`Setting new timeout (${delay})...`);
 		timeout = setTimeout(() => {
 			fn(...args);
 		}, delay);
@@ -337,9 +337,9 @@ function debounce(fn: Function, delay: number) {
 
 const commitMap = new Map();
 function debouncedCommit(repository: Repository) {
-	logger.info("Debouncing commit...");
+	logger.debug("Debouncing commit...");
 	if (!commitMap.has(repository)) {
-		logger.info("Creating new <anonym> debounced commit function...");
+		logger.debug("Creating new <anonym> debounced commit function...");
 		commitMap.set(
 			repository,
 			debounce(() => commit(repository), config.autoCommitDelay)
@@ -351,10 +351,10 @@ function debouncedCommit(repository: Repository) {
 
 let statusBarItem: vscode.StatusBarItem | null = null;
 export function ensureStatusBarItem() {
-	logger.info("Ensuring status bar item exists...");
+	logger.debug("Ensuring status bar item exists...");
 
 	if (!statusBarItem) {
-		logger.info("Creating new status bar item...");
+		logger.debug("Creating new status bar item...");
 		statusBarItem = vscode.window.createStatusBarItem(
 			vscode.StatusBarAlignment.Left,
 			-100
@@ -371,7 +371,7 @@ export function ensureStatusBarItem() {
 
 let disposables: vscode.Disposable[] = [];
 export function watchForChanges(git: GitAPI): vscode.Disposable {
-	logger.info("Starting Watcher...");
+	logger.debug("Starting Watcher...");
 	const commitAfterDelay = debouncedCommit(git.repositories[0]);
 	disposables.push(git.repositories[0].state.onDidChange(commitAfterDelay));
 
@@ -403,7 +403,7 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 		},
 	});
 
-	logger.info(
+	logger.debug(
 		"Registering repository push/pull timeouts..."
 	);
 
@@ -450,7 +450,7 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 		pullRepository(git.repositories[0]);
 	}
 
-	logger.info("Watcher started");
+	logger.debug("Watcher started");
 	return {
 		dispose: () => {
 			disposables.forEach((disposable) => disposable.dispose());

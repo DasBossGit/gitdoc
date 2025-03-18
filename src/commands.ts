@@ -12,7 +12,7 @@ interface GitTimelineItem {
 }
 
 export function registerCommands(context: vscode.ExtensionContext) {
-	logger.info("Registering commands...");
+	logger.debug("Registering commands...");
 	function registerCommand(name: string, callback: (...args: any[]) => any) {
 		context.subscriptions.push(
 			vscode.commands.registerCommand(
@@ -22,13 +22,13 @@ export function registerCommands(context: vscode.ExtensionContext) {
 		);
 	}
 	try {
-		logger.info("Registering 'enable' command...");
+		logger.debug("Registering 'enable' command...");
 		registerCommand("enable", updateContext.bind(null, true));
 
-		logger.info("Registering 'disable' command...");
+		logger.debug("Registering 'disable' command...");
 		registerCommand("disable", updateContext.bind(null, false));
 
-		logger.info("Registering 'restoreVersion' command...");
+		logger.debug("Registering 'restoreVersion' command...");
 		registerCommand("restoreVersion", async (item: GitTimelineItem) => {
 			if (!vscode.window.activeTextEditor) {
 				logger.warn(
@@ -54,7 +54,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
 			commit(git?.repositories[0]!);
 		});
 
-		logger.info("Registering 'squashVersions' command...");
+		logger.debug("Registering 'squashVersions' command...");
 		registerCommand("squashVersions", async (item: GitTimelineItem) => {
 			const message = await vscode.window.showInputBox({
 				prompt: "Enter the name to give to the new squashed version",
@@ -69,7 +69,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
 			}
 		});
 
-		logger.info("Registering 'undoVersion' command...");
+		logger.debug("Registering 'undoVersion' command...");
 		registerCommand("undoVersion", async (item: GitTimelineItem) => {
 			const git = await getGitApi();
 
@@ -83,7 +83,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
 			await commit(git?.repositories[0]!);
 		});
 
-		logger.info("Registering 'commit' command...");
+		logger.debug("Registering 'commit' command...");
 		registerCommand("commit", async () => {
 			const git = await getGitApi();
 			if (git && git.repositories.length > 0) {

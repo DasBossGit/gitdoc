@@ -10,7 +10,7 @@ export type CommitValidationLevel = "error" | "warning" | "none";
 export type PushMode = "forcePush" | "forcePushWithLease" | "push";
 
 function config() {
-  logger.info("Retrieving configuration");
+  logger.debug("Retrieving configuration");
   return vscode.workspace.getConfiguration("gitdoc");
 }
 

@@ -65,7 +65,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 let watcher: vscode.Disposable | null;
 async function checkEnabled(git: GitAPI) {
-	logger.info("Checking if GitDoc should be enabled...");
+	logger.debug("Checking if GitDoc should be enabled...");
 	if (watcher) {
 		watcher.dispose();
 		watcher = null;
