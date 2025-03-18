@@ -12,21 +12,26 @@ import * as winstonTransport from "winston-transport";
 import * as windowsTransportVscode from "winston-transport-vscode";
 
 
+try {
+	const outputChannel = vscode.window.createOutputChannel(EXTENSION_NAME, {
+		log: true,
+	});
 
-const outputChannel = vscode.window.createOutputChannel(EXTENSION_NAME, {
-	log: true,
-});
-
-// 3. Create the Winston logger giving it the Log Output Channel
-export let logger = winston.createLogger({
-	level: 'trace', // Recommended: set the highest possible level
-	levels: windowsTransportVscode.LogOutputChannelTransport.config.levels, // Recommended: use predefined VS Code log levels
-	format: windowsTransportVscode.LogOutputChannelTransport.format(), // Recommended: use predefined format
-	transports: [new windowsTransportVscode.LogOutputChannelTransport({ outputChannel })],
-});
+	// 3. Create the Winston logger giving it the Log Output Channel
+	export let logger = winston.createLogger({
+		level: 'trace', // Recommended: set the highest possible level
+		levels: windowsTransportVscode.LogOutputChannelTransport.config.levels, // Recommended: use predefined VS Code log levels
+		format: windowsTransportVscode.LogOutputChannelTransport.format(), // Recommended: use predefined format
+		transports: [new windowsTransportVscode.LogOutputChannelTransport({ outputChannel })],
+	});
+}
+catch (error) {
+	console.error("Error creating logger:", error);
+	throw error;
+}
 
 export async function activate(context: vscode.ExtensionContext) {
-	logger.info('Hello World!');
+	/* logger.info('Hello World!'); */
 
 
 	const git = await getGitApi();
