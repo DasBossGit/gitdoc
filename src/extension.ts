@@ -6,12 +6,11 @@ import { getGitApi, GitAPI, RefType } from "./git";
 import { store } from "./store";
 import { commit, watchForChanges, ensureStatusBarItem } from "./watcher";
 import { updateContext } from "./utils";
-import { EXTENSION_LOG_FMT } from "./constants";
 import { logger } from "./logger";
 
 
 export async function activate(context: vscode.ExtensionContext) {
-	logger.log(EXTENSION_LOG_FMT, "Activating...");
+	logger.info("Activating...");
 
 	const git = await getGitApi();
 	if (!git) {
@@ -56,17 +55,17 @@ export async function activate(context: vscode.ExtensionContext) {
 		})
 	);
 	if (store.enabled) {
-		logger.info(EXTENSION_LOG_FMT, "Starting GitDoc...");
+		logger.info("Starting GitDoc...");
 		ensureStatusBarItem();
 		updateContext(true, false);
 		watchForChanges(git);
-		logger.info(EXTENSION_LOG_FMT, "GitDoc watching for changes");
+		logger.info("GitDoc watching for changes");
 	}
 }
 
 let watcher: vscode.Disposable | null;
 async function checkEnabled(git: GitAPI) {
-	logger.log(EXTENSION_LOG_FMT, "Checking if GitDoc should be enabled...");
+	logger.info("Checking if GitDoc should be enabled...");
 	if (watcher) {
 		watcher.dispose();
 		watcher = null;
@@ -75,10 +74,10 @@ async function checkEnabled(git: GitAPI) {
 	let branchName = git.repositories[0]?.state?.HEAD?.name;
 
 	if (!branchName) {
-		logger.log(EXTENSION_LOG_FMT, "No branch found, trying to fetch...");
+		logger.info("No branch found, trying to fetch...");
 		const refs = await git.repositories[0]?.getRefs();
 		branchName = refs?.find((ref) => ref.type === RefType.Head)?.name;
-		logger.log(EXTENSION_LOG_FMT, "Branch found:", branchName);
+		logger.info("Branch found:", branchName);
 	}
 
 	const enabled =
@@ -87,11 +86,10 @@ async function checkEnabled(git: GitAPI) {
 		!!branchName &&
 		!config.excludeBranches.includes(branchName);
 
-	logger.info(
-		EXTENSION_LOG_FMT,
+	logger.info((
 		"GitDoc should %sbe enabled",
 		enabled ? "" : "not "
-	);
+	));
 	updateContext(enabled, false);
 
 	if (enabled) {
