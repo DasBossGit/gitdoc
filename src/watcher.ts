@@ -332,6 +332,7 @@ function debounce(fn: Function, delay: number) {
 		if (timeout) {
 			console.log("Clearing existing timeout...");
 			clearTimeout(timeout);
+
 		}
 
 		console.log("Setting new timeout (%s)...", delay);
