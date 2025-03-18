@@ -18,6 +18,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	outputChannel.show(true);
 
+	console.error(EXTENSION_LOG_FMT, outputChannel);
+
+	console.log(EXTENSION_LOG_FMT, "Activating...");
+
 	const git = await getGitApi();
 	if (!git) {
 		console.error(
