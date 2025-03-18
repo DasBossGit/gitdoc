@@ -4,6 +4,7 @@ import { getGitApi } from "./git";
 import { updateContext } from "./utils";
 import { commit } from "./watcher";
 import { EXTENSION_LOG_FMT } from "./constants";
+import { logger } from "./logger";
 
 interface GitTimelineItem {
 	message: string;
@@ -12,7 +13,7 @@ interface GitTimelineItem {
 }
 
 export function registerCommands(context: vscode.ExtensionContext) {
-	console.log(EXTENSION_LOG_FMT, "Registering commands...");
+	logger.log(EXTENSION_LOG_FMT, "Registering commands...");
 	function registerCommand(name: string, callback: (...args: any[]) => any) {
 		context.subscriptions.push(
 			vscode.commands.registerCommand(
@@ -22,16 +23,16 @@ export function registerCommands(context: vscode.ExtensionContext) {
 		);
 	}
 	try {
-		console.log(EXTENSION_LOG_FMT, "Registering 'enable' command...");
+		logger.log(EXTENSION_LOG_FMT, "Registering 'enable' command...");
 		registerCommand("enable", updateContext.bind(null, true));
 
-		console.log(EXTENSION_LOG_FMT, "Registering 'disable' command...");
+		logger.log(EXTENSION_LOG_FMT, "Registering 'disable' command...");
 		registerCommand("disable", updateContext.bind(null, false));
 
-		console.log(EXTENSION_LOG_FMT, "Registering 'restoreVersion' command...");
+		logger.log(EXTENSION_LOG_FMT, "Registering 'restoreVersion' command...");
 		registerCommand("restoreVersion", async (item: GitTimelineItem) => {
 			if (!vscode.window.activeTextEditor) {
-				console.warn(
+				logger.warn(
 					EXTENSION_LOG_FMT,
 					"No active text editor found. Aborting."
 				);
@@ -55,7 +56,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
 			commit(git?.repositories[0]!);
 		});
 
-		console.log(EXTENSION_LOG_FMT, "Registering 'squashVersions' command...");
+		logger.log(EXTENSION_LOG_FMT, "Registering 'squashVersions' command...");
 		registerCommand("squashVersions", async (item: GitTimelineItem) => {
 			const message = await vscode.window.showInputBox({
 				prompt: "Enter the name to give to the new squashed version",
@@ -70,7 +71,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
 			}
 		});
 
-		console.log(EXTENSION_LOG_FMT, "Registering 'undoVersion' command...");
+		logger.log(EXTENSION_LOG_FMT, "Registering 'undoVersion' command...");
 		registerCommand("undoVersion", async (item: GitTimelineItem) => {
 			const git = await getGitApi();
 
@@ -84,7 +85,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
 			await commit(git?.repositories[0]!);
 		});
 
-		console.log(EXTENSION_LOG_FMT, "Registering 'commit' command...");
+		logger.log(EXTENSION_LOG_FMT, "Registering 'commit' command...");
 		registerCommand("commit", async () => {
 			const git = await getGitApi();
 			if (git && git.repositories.length > 0) {
@@ -92,7 +93,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
 			}
 		});
 	} catch (error) {
-		console.error(EXTENSION_LOG_FMT, "Error registering commands:", error);
+		logger.error(EXTENSION_LOG_FMT, "Error registering commands:", error);
 		throw error;
 	}
 }

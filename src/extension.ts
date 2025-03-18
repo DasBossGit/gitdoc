@@ -15,7 +15,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	const git = await getGitApi();
 	if (!git) {
-		console.error(
+		logger.error(
 			"VSCode internal Git extension not found. This is a bug."
 		);
 		return;
@@ -56,17 +56,17 @@ export async function activate(context: vscode.ExtensionContext) {
 		})
 	);
 	if (store.enabled) {
-		console.log(EXTENSION_LOG_FMT, "Starting GitDoc...");
+		logger.info(EXTENSION_LOG_FMT, "Starting GitDoc...");
 		ensureStatusBarItem();
 		updateContext(true, false);
 		watchForChanges(git);
-		console.log(EXTENSION_LOG_FMT, "GitDoc watching for changes");
+		logger.info(EXTENSION_LOG_FMT, "GitDoc watching for changes");
 	}
 }
 
 let watcher: vscode.Disposable | null;
 async function checkEnabled(git: GitAPI) {
-	console.log(EXTENSION_LOG_FMT, "Checking if GitDoc should be enabled...");
+	logger.log(EXTENSION_LOG_FMT, "Checking if GitDoc should be enabled...");
 	if (watcher) {
 		watcher.dispose();
 		watcher = null;
@@ -75,10 +75,10 @@ async function checkEnabled(git: GitAPI) {
 	let branchName = git.repositories[0]?.state?.HEAD?.name;
 
 	if (!branchName) {
-		console.log(EXTENSION_LOG_FMT, "No branch found, trying to fetch...");
+		logger.log(EXTENSION_LOG_FMT, "No branch found, trying to fetch...");
 		const refs = await git.repositories[0]?.getRefs();
 		branchName = refs?.find((ref) => ref.type === RefType.Head)?.name;
-		console.log(EXTENSION_LOG_FMT, "Branch found:", branchName);
+		logger.log(EXTENSION_LOG_FMT, "Branch found:", branchName);
 	}
 
 	const enabled =
@@ -87,7 +87,7 @@ async function checkEnabled(git: GitAPI) {
 		!!branchName &&
 		!config.excludeBranches.includes(branchName);
 
-	console.log(
+	logger.info(
 		EXTENSION_LOG_FMT,
 		"GitDoc should %sbe enabled",
 		enabled ? "" : "not "
