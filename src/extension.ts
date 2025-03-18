@@ -7,10 +7,11 @@ import { store } from "./store";
 import { commit, watchForChanges, ensureStatusBarItem } from "./watcher";
 import { updateContext } from "./utils";
 import { EXTENSION_LOG_FMT } from "./constants";
-import { logger } from "./logger";
+import { createLogger } from "./logger";
+
 
 export async function activate(context: vscode.ExtensionContext) {
-
+	let logger = createLogger();
 	logger.info('Hello World!');
 
 
