@@ -16,6 +16,9 @@ import * as windowsTransportVscode from "winston-transport-vscode";
 const outputChannel = vscode.window.createOutputChannel(EXTENSION_NAME, {
 	log: true,
 });
+const transportStream = new winstonTransport.Stream({
+	outputChannel,
+});
 
 // 3. Create the Winston logger giving it the Log Output Channel
 export const logger = winston.createLogger({
@@ -23,7 +26,7 @@ export const logger = winston.createLogger({
 	levels: windowsTransportVscode.LogOutputChannelTransport.config.levels, // Recommended: use predefined VS Code log levels
 	format: windowsTransportVscode.LogOutputChannelTransport.format(), // Recommended: use predefined format
 	transports: [new windowsTransportVscode.LogOutputChannelTransport({
-		outputChannel,
+		transportStream,
 	})],
 });
 
