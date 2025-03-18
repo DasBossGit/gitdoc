@@ -11,14 +11,24 @@
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
+				"--extensionDevelopmentPath=${workspaceFolder} "
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
 			"preLaunchTask": "npm: watch",
 			"showAsyncStacks": true,
-			"smartStep": true
+			"smartStep": true,
+			"debugWebviews": true,
+			"timeouts": {
+				"hoverEvaluation": 500,
+				"sourceMapCumulativePause": 1000,
+				"sourceMapMinPause": 1000,
+			},
+			"trace": true,
+			"debugWebWorkerHost": true,
+			"enableDWARF": true,
+			"enableContentValidation": true,
 		},
 		{
 			"name": "Extension Tests",
