@@ -13,7 +13,10 @@ import { createLogger } from "./logger";
 export async function activate(context: vscode.ExtensionContext) {
 	let logger = createLogger();
 	logger.info('Hello World!');
-
+	const outputChannel = vscode.window.createOutputChannel('EXTENSION_NAME', {
+		log: true,
+	});
+	outputChannel.show(true);
 
 	const git = await getGitApi();
 	if (!git) {
