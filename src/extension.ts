@@ -7,11 +7,12 @@ import { store } from "./store";
 import { commit, watchForChanges, ensureStatusBarItem } from "./watcher";
 import { updateContext } from "./utils";
 import { EXTENSION_LOG_FMT, EXTENSION_NAME } from "./constants";
+import * as winston from "winston";
+import * as winstonTransport from "winston-transport";
+import * as windowsTransportVscode from "winston-transport-vscode";
 
-const winston = require('winston');
-const { LogOutputChannelTransport } = require('winston-transport-vscode');
 
-// 2. Create a Log Output Channel for your extension with the VS Code API
+
 const outputChannel = vscode.window.createOutputChannel(EXTENSION_NAME, {
 	log: true,
 });
@@ -19,9 +20,11 @@ const outputChannel = vscode.window.createOutputChannel(EXTENSION_NAME, {
 // 3. Create the Winston logger giving it the Log Output Channel
 export const logger = winston.createLogger({
 	level: 'trace', // Recommended: set the highest possible level
-	levels: LogOutputChannelTransport.config.levels, // Recommended: use predefined VS Code log levels
-	format: LogOutputChannelTransport.format(), // Recommended: use predefined format
-	transports: [new LogOutputChannelTransport({ outputChannel })],
+	levels: windowsTransportVscode.LogOutputChannelTransport.config.levels, // Recommended: use predefined VS Code log levels
+	format: windowsTransportVscode.LogOutputChannelTransport.format(), // Recommended: use predefined format
+	transports: [new windowsTransportVscode.LogOutputChannelTransport({
+		outputChannel,
+	})],
 });
 
 export async function activate(context: vscode.ExtensionContext) {
