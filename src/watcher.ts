@@ -88,9 +88,7 @@ async function hasRemotes(repository: Repository): Promise<boolean> {
 
 function matches(uri: vscode.Uri) {
 	logger.info(
-
-		"Checking if URI matches file pattern [%s]...",
-		uri.path
+		`Checking if URI matches file pattern [${uri.path}]...`,
 	);
 	return (
 		minimatch(uri.path, config.filePattern, { dot: true }) ||
@@ -108,10 +106,7 @@ async function generateCommitMessage(
 			const relativeFilePath = vscode.workspace.asRelativePath(uri);
 			const absoluteFilePath = uri.fsPath;
 			logger.info(
-
-				"Changes found in file [%s] [%s]",
-				relativeFilePath,
-				absoluteFilePath
+				`Changes found in file [${relativeFilePath}] [${absoluteFilePath}]`,
 			);
 			let out = null;
 			try {
@@ -234,7 +229,6 @@ export async function commit(repository: Repository, message?: string) {
 
 		if (config.commitValidationLevel !== "none") {
 			logger.info(
-
 				"Checking cahnges against validation level..."
 			);
 			const diagnostics = vscode.languages
@@ -334,7 +328,7 @@ function debounce(fn: Function, delay: number) {
 
 		}
 
-		logger.info("Setting new timeout (%s)...", delay);
+		logger.info(`Setting new timeout (${delay})...`);
 		timeout = setTimeout(() => {
 			fn(...args);
 		}, delay);
@@ -410,7 +404,6 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 	});
 
 	logger.info(
-
 		"Registering repository push/pull timeouts..."
 	);
 

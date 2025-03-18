@@ -86,10 +86,9 @@ async function checkEnabled(git: GitAPI) {
 		!!branchName &&
 		!config.excludeBranches.includes(branchName);
 
-	logger.info((
-		"GitDoc should %sbe enabled",
-		enabled ? "" : "not "
-	));
+	logger.info(
+		`GitDoc should ${(enabled ? "" : "not ")}be enabled`
+	);
 	updateContext(enabled, false);
 
 	if (enabled) {
