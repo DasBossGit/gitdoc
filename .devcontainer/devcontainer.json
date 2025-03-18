@@ -1,5 +1,5 @@
 {
-   "tasks": {
+    "tasks": {
         "build": "npm run package"
     }
 }
