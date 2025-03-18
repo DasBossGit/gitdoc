@@ -4,7 +4,9 @@ import * as winstonTransport from "winston-transport";
 import * as windowsTransportVscode from "winston-transport-vscode";
 
 
-export function createLogger() {
+export const logger = createLogger();
+
+function createLogger() {
     try {
         // 2. Create a Log Output Channel for your extension with the VS Code API
         const outputChannel = vscode.window.createOutputChannel('EXTENSION_NAME', {
@@ -19,7 +21,7 @@ export function createLogger() {
             transports: [new windowsTransportVscode.LogOutputChannelTransport({ outputChannel })],
         });
 
-        logger.info('Hello World!');
+        return logger;
     }
     catch (error) {
         console.error("Error creating logger:", error);
