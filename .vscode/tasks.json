@@ -4,9 +4,9 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "npm-watch",
+			"label": "webpack-watch",
 			"type": "npm",
-			"script": "webpack --watch --mode development --devtool hidden-source-map",
+			"script": "watch",
 			"problemMatcher": {
 				"base": "$ts-webpack-watch",
 				"background": {
@@ -19,15 +19,17 @@
 					}
 				},
 			},
+			"runOptions": {
+				"instanceLimit": 1
+			},
 			"isBackground": true,
-			/*
 			"presentation": {
 				"reveal": "never"
 			},
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			} */
+			}
 		},
 	]
 }

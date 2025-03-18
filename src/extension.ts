@@ -30,6 +30,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		return;
 	}
 
+
 	// Initialize the store based on the
 	// user/workspace configuration.
 	store.enabled = config.enabled;
