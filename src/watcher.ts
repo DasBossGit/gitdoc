@@ -21,7 +21,7 @@ async function pushRepository(
 	store.isPushing = true;
 
 	try {
-		console.log(EXTENSION_LOG_FMT, "Pushing changes...");
+		console.log(EXTENSION_LOG_FMT, "Pushing changes to remote...");
 
 		if (config.autoPull === "onPush") {
 			await pullRepository(repository);
@@ -46,7 +46,7 @@ async function pushRepository(
 
 		await repository.push(...pushArgs);
 
-		console.log(EXTENSION_LOG_FMT, "Changes pushed.");
+		console.log(EXTENSION_LOG_FMT, "Changes pushed to remote.");
 
 		store.isPushing = false;
 	} catch {
@@ -72,11 +72,11 @@ async function pullRepository(repository: Repository) {
 
 	store.isPulling = true;
 
-	console.log(EXTENSION_LOG_FMT, "Pulling changes...");
+	console.log(EXTENSION_LOG_FMT, "Pulling remote changes...");
 
 	await repository.pull();
 
-	console.log(EXTENSION_LOG_FMT, "Changes pulled.");
+	console.log(EXTENSION_LOG_FMT, "Remote changes pulled.");
 
 	store.isPulling = false;
 }
