@@ -4,7 +4,7 @@
   "publisher": "DasBossGit",
   "icon": "images/icon.png",
   "description": "Automatically commit/push/pull changes on save, so you can edit a Git repo like a multi-file, versioned document.",
-  "version": "0.2.7",
+  "version": "0.2.8.1",
   "extensionKind": [
     "workspace"
   ],
@@ -111,6 +111,11 @@
           ],
           "default": "error",
           "description": "Specifies whether to validate that a file is free of problems, before attempting to commit changes to it."
+        },
+        "gitdoc.fullTrace": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable full trace logging. This will log all git commands and their output to the console. This is useful for debugging issues with the extension"
         },
         "gitdoc.commitOnClose": {
           "type": "boolean",

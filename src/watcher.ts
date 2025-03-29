@@ -6,6 +6,7 @@ import { store } from "./store";
 import { reaction } from "mobx";
 import * as minimatch from "minimatch";
 import { logger } from "./logger";
+import { updateContext } from "./utils";
 
 const REMOTE_NAME = "origin";
 
@@ -136,28 +137,30 @@ Error: Unable to generate diff for this file.`;
 	if (!model || model.length === 0) {
 		logger.error("No AI model found.");
 		await vscode.window.showWarningMessage(
-
 			("AI model not found, unable to generate commit message with " + config.aiModel),
 			{
-				detail: 'Check for updates on the GitHub Copilot extension and or copilot subscription.',
+				detail: 'Check for updates on the GitHub Copilot extension and or copilot subscription.\n\nDisabling AI commits...',
 				modal: true
 			}
-
 		);
-
-		return null;
+		config.aiEnabled = false;
+		throw ("AI model not found, unable to generate commit message with " + config.aiModel);
 	}
+
+	logger.debug("AI model found: ", model[0].name);
+	logger.debug("Preparing commit message prompt...");
 
 	const prompt = `# Instructions
 
-You are a developer working on a project that uses Git for version control. You have made some changes to the codebase and are preparing to commit them to the repository. Your task is to summarize the changes that you have made into a concise commit message that describes the essence of the changes that were made.
+You are a professional developer working on a project that uses Git for version control. You have made some changes to the codebase and are preparing to commit them to the repository. Your task is to summarize the changes that you have made into a concise commit message that describes the essence of the changes that were made.
 
 * Always start the commit message with a present tense verb such as "Update", "Fix", "Modify", "Add", "Improve", "Organize", "Arrange", "Mark", etc.
 * Respond in plain text, with no markdown formatting, and without any extra content. Simply respond with the commit message, and without a trailing period.
-* Don't reference the file paths that were changed, but make sure summarize all significant changes (using your best judgement).
-* When multiple files have been changed, give priority to edited files, followed by added files, and then renamed/deleted files.
-* When a change includes adding an emoji to a list item in markdown, then interpret a runner emoji as marking it as in progress, a checkmark emoji as meaning its completed, and a muscle emoji as meaning its a stretch goal.
-* The only exception to the above rule is when the the changes read ´Error: Unable to generate diff for this file.´, in which case you shall NOT mention that the file could not be diffed.
+* Don't reference the file paths that were changed, but make sure to summarize all significant changes (using your best judgement).
+* When multiple project modifiying actions occur, prioritize edited files, followed by added files, and then renamed/deleted files.
+* When multiple files have been edited, give priority to the structure in which edits may relate to another, e.g. one function added that changes the entire flow of the project.
+* When a change includes adding an emoji to a list item in markdown or any style of ToDo List, then interpret a runner emoji as marking it as in progress, a checkmark emoji as meaning its completed, and a muscle emoji as meaning its a stretch goal.
+* The only exception to the above rule is when a change read 'Error: Unable to generate diff for this file.', in which case you shall NOT mention that the file could not be diffed.
 ${config.aiUseEmojis
 			? "* Prepend an emoji to the message that expresses the nature of the changes, and is as specific/relevant to the subject and/or action of the changes as possible.\n"
 			: ""
@@ -177,6 +180,8 @@ ${config.aiCustomInstructions}
 
 `;
 
+	logger.trace(`Prompt: ${prompt}`);
+
 	logger.debug("Sending request...");
 
 	const response = await model[0].sendRequest([
@@ -192,6 +197,8 @@ ${config.aiCustomInstructions}
 		summary += part;
 	}
 
+	logger.trace("Received response: ", summary);
+
 	return summary;
 }
 
@@ -199,11 +206,14 @@ export async function commit(repository: Repository, message?: string) {
 	// This function shouldn't ever be called when GitDoc
 	// is disabled, but we're checking it just in case.
 	try {
-		if (store.enabled === false || store.isPushing) return;
+		logger.info("Committing changes...");
+
+		if (store.enabled === false || store.isPushing) {
+			logger.debug(`Extension is ${(store.isPushing ? "pushing" : "disabled")}, aborting commit...`);
+			return
+		};
 
 		store.isPushing = true;
-
-		logger.info("Committing changes...");
 
 		const changes = [
 			...repository.state.workingTreeChanges,
@@ -217,6 +227,8 @@ export async function commit(repository: Repository, message?: string) {
 			return;
 		}
 
+		logger.trace("Fetching changes from repository...");
+
 		const changedUris = changes
 			.filter((change) => matches(change.uri))
 			.map((change) => change.uri);
@@ -229,7 +241,7 @@ export async function commit(repository: Repository, message?: string) {
 
 		if (config.commitValidationLevel !== "none") {
 			logger.debug(
-				"Checking cahnges against validation level..."
+				"Checking changes against validation level..."
 			);
 			const diagnostics = vscode.languages
 				.getDiagnostics()
@@ -274,16 +286,20 @@ export async function commit(repository: Repository, message?: string) {
 			currentTime = currentTime.setZone(config.timeZone);
 		}
 
-		logger.debug("Formatting commit message...");
 
-		let commitMessage =
-			message || currentTime.toFormat(config.commitMessageFormat);
+		let commitMessage = "";
 
 		if (config.aiEnabled) {
 			const aiMessage = await generateCommitMessage(repository, changedUris);
 			if (aiMessage) {
 				commitMessage = aiMessage;
 			}
+		} else {
+			logger.debug("Generating commit message using default format...");
+
+			commitMessage = message || currentTime.toFormat(config.commitMessageFormat);
+
+			logger.trace("Commit message: ", commitMessage);
 		}
 
 		logger.info("Committing changes...");
@@ -292,6 +308,8 @@ export async function commit(repository: Repository, message?: string) {
 			all: true,
 			noVerify: config.noVerify,
 		});
+
+		store.lastCommitSuccessful = true;
 
 		delete process.env.GIT_AUTHOR_DATE;
 		delete process.env.GIT_COMMITTER_DATE;
@@ -311,6 +329,22 @@ export async function commit(repository: Repository, message?: string) {
 	} catch (e) {
 		logger.error(e);
 		store.isPushing = false;
+		if (store.lastCommitSuccessful === false) {
+			logger.error("Commit failed twice, aborting and disabling GitDoc...");
+			store.enabled = false;
+			updateContext(false, true);
+			store.isPulling = false;
+			store.isCommitting = false;
+
+			await vscode.window.showWarningMessage(
+				("GitDoc failed to commit twice, disabling..."),
+				{
+					detail: 'Check config and logs. Enable GitDoc again to re-enable it.',
+					modal: true
+				}
+			);
+		}
+		store.lastCommitSuccessful = false;
 		throw e;
 	}
 }

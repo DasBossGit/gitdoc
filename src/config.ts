@@ -66,6 +66,10 @@ export default {
   get aiEnabled() {
     return config().get("ai.enabled", false);
   },
+  set aiEnabled(value: boolean) {
+    config().update("ai.enabled", value, vscode.ConfigurationTarget.Workspace);
+    logger.info("AI is now", value ? "enabled" : "disabled");
+  },
   get aiModel() {
     return config().get("ai.model", "gpt-4o");
   },
@@ -74,5 +78,13 @@ export default {
   },
   get aiUseEmojis() {
     return config().get("ai.useEmojis", false);
-  }
+  },
+  get fullTrace(): boolean {
+    return config().get("fullTrace", false);
+  },
+  /*   set fullTrace(value: boolean) {
+      config().update("fullTrace", value, vscode.ConfigurationTarget.Workspace);
+      logger.update_is_trace(value);
+      logger.info("Full trace logging is now", value ? "enabled" : "disabled");
+    } */
 };

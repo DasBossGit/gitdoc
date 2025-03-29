@@ -8,7 +8,6 @@ import { commit, watchForChanges, ensureStatusBarItem } from "./watcher";
 import { updateContext } from "./utils";
 import { logger } from "./logger";
 
-
 export async function activate(context: vscode.ExtensionContext) {
 	logger.info("Activating...");
 
@@ -24,6 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Initialize the store based on the
 	// user/workspace configuration.
 	store.enabled = config.enabled;
+	store.lastCommitSuccessful = true;
 
 	registerCommands(context);
 
@@ -48,7 +48,8 @@ export async function activate(context: vscode.ExtensionContext) {
 				e.affectsConfiguration("gitdoc.enabled") ||
 				e.affectsConfiguration("gitdoc.excludeBranches") ||
 				e.affectsConfiguration("gitdoc.autoCommitDelay") ||
-				e.affectsConfiguration("gitdoc.filePattern")
+				e.affectsConfiguration("gitdoc.filePattern") ||
+				e.affectsConfiguration("gitdoc.fullTrace")
 			) {
 				checkEnabled(git);
 			}
@@ -97,6 +98,7 @@ async function checkEnabled(git: GitAPI) {
 }
 
 export async function deactivate() {
+	store.lastCommitSuccessful = true;
 	if (store.enabled && config.commitOnClose) {
 		const git = await getGitApi();
 		if (git && git.repositories.length > 0) {

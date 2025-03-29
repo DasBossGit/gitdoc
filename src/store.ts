@@ -5,4 +5,5 @@ export const store = observable({
 	isPulling: false,
 	isPushing: false,
 	isCommitting: false,
+	lastCommitSuccessful: true,
 });

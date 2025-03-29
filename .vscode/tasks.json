@@ -31,5 +31,33 @@
 				"isDefault": true
 			}
 		},
+		{
+			"label": "webpack-compile",
+			"type": "npm",
+			"script": "compile",
+			"problemMatcher": {
+				"base": "$ts-webpack-watch",
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": {
+						"regexp": "."
+					},
+					"endsPattern": {
+						"regexp": "webpack [\\d.]+ compiled"
+					}
+				},
+			},
+			"runOptions": {
+				"instanceLimit": 1
+			},
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
 	]
 }
