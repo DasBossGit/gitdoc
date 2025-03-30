@@ -53,5 +53,6 @@
     "statusBar.border": "#00b3ff",
     "statusBarItem.remoteBackground": "#00b141",
     "statusBarItem.remoteForeground": "#fff"
-  }
+  },
+  "gitdoc.ai.enabled": false
 }
