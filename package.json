@@ -191,7 +191,9 @@
         },
         "gitdoc.filter.exclude": {
           "type": "array",
-          "default": "",
+          "items": {
+            "type": "string"
+          },
           "markdownDescription": "Add files that are excluded in addition to the default .gitignore."
         }
       }
