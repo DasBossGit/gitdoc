@@ -103,7 +103,7 @@ function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive
 			minimatch(uri.fsPath, predicate, { dot: true, nocase: !case_sensitive })
 	}));
 
-	logger.info(`URI does${res ? "" : "not"} match the predicate`)
+	logger.info(`URI does${res ? "" : " not"} match the predicate`)
 	return res;
 }
 
