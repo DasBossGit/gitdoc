@@ -5,12 +5,14 @@
 //  API: https://code.visualstudio.com/api/references/vscode-api
 
 function activate(_context) {
+   output("clear");
+
    const git = extensions.getExtension("vscode.git")
 
    let git_ext = git.exports.getAPI(1);
 
 
-   window.showInformationMessage(git_ext.repositories);
+   println(git_ext.repositories);
 }
 
 function deactivate() { }
