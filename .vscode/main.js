@@ -22,6 +22,11 @@ function activate(_context) {
    ];
 
    println(changes)
+
+   const changedUris = changes
+      .map((change) => change.uri);
+
+   println(changedUris)
 }
 
 function deactivate() { }
