@@ -87,7 +87,7 @@ async function hasRemotes(repository: Repository): Promise<boolean> {
 	return refs.some((ref) => ref.type === RefType.RemoteHead);
 }
 
-function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive: boolean = true) {
+function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive: boolean = true, partial: boolean = false) {
 	logger.info(
 		`Checking if URI matches filter [${uri.fsPath}]...`,
 	);
@@ -101,7 +101,7 @@ function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive
 	console.error(filters)
 	console.error(case_sensitive)
 
-	const opt = case_sensitive ? { dot: true } : { dot: true, nocase: true }
+	const opt = { dot: true, nocase: !case_sensitive, partial: partial }
 
 	var res = (filters.some((predicate) => {
 		console.error(uri.path, predicate, opt)
@@ -252,7 +252,7 @@ export async function commit(repository: Repository, message?: string) {
 			.filter((change) => matches(change.uri, config.filePattern))
 			.filter((change) => {
 				logger.info("Checking if change uri matches any exclude filter")
-				var res = matches(change.uri, config.excludeFilters, config.excludeFiltersCaseSense);
+				var res = matches(change.uri, config.excludeFilters, config.excludeFiltersCaseSense, true);
 				if (res) {
 					console.error("Exclude filter matches")
 					var caseSense = config.excludeFiltersCaseSense;
