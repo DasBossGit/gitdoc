@@ -101,10 +101,12 @@ function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive
 	console.error(filters)
 	console.error(case_sensitive)
 
+	const opt = case_sensitive ? { dot: true } : { dot: true, nocase: true }
+
 	var res = (filters.some((predicate) => {
-		console.error(uri.path, predicate)
-		minimatch(uri.path, predicate, { dot: true, nocase: !case_sensitive }) ||
-			minimatch(uri.fsPath, predicate, { dot: true, nocase: !case_sensitive })
+		console.error(uri.path, predicate, opt)
+		return (minimatch(uri.path, predicate, opt) ||
+			minimatch(uri.fsPath, predicate, opt))
 	}));
 
 	logger.info(`URI does${res ? "" : " not"} match filter`)
