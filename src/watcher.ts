@@ -87,14 +87,21 @@ async function hasRemotes(repository: Repository): Promise<boolean> {
 	return refs.some((ref) => ref.type === RefType.RemoteHead);
 }
 
-function matches(uri: vscode.Uri) {
+function matches(uri: vscode.Uri, filter: string | Array<string>) {
 	logger.info(
-		`Checking if URI matches file pattern [${uri.path}]...`,
+		`Checking if URI matches file pattern [${uri.fsPath}]...`,
 	);
-	return (
-		minimatch(uri.path, config.filePattern, { dot: true }) ||
-		minimatch(uri.fsPath, config.filePattern, { dot: true })
-	);
+	var filters: Array<string> = [];
+	if ("string" == typeof (filter)) {
+		filters = [filter]
+	} else {
+		filters = filter;
+	}
+
+	return (filters.some((predicate) => {
+		minimatch(uri.path, predicate, { dot: true }) ||
+			minimatch(uri.fsPath, predicate, { dot: true })
+	}));
 }
 
 async function generateCommitMessage(
@@ -237,12 +244,12 @@ export async function commit(repository: Repository, message?: string) {
 				const uri = change.uri;
 				logger.info("Checking if change uri matches any exclude filter")
 				filters.some((filter) => {
-					logger.trace(`Matching "${filter}" against URI [${uri.path} | ${uri.fsPath}] `)
+					logger.trace(`Matching "${filter}" against URI [${uri.fsPath}] `)
 					let res = !(minimatch(uri.path, filter, { dot: true }) ||
 						minimatch(uri.fsPath, filter, { dot: true }));
-					logger.trace(`URI does ${res ? "" : "not"} match predicate -> ${res ? "including" : "excluding"}`)
+					logger.trace(`URI does ${res ? "" : "not "}match predicate -> ${!res ? "including" : "excluding"}`)
 					if (!res) {
-						logger.info(`Exclude-filter [${filter}] matches URI [${uri.path}]`)
+						logger.warn(`Exclude-filter [${filter}] matches URI [${uri.fsPath}]`)
 					}
 				})
 			})
