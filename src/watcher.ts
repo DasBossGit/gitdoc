@@ -108,7 +108,7 @@ function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive
 		return minimatch.match([uri.path, uri.fsPath], predicate, opt)
 	}));
 
-	logger.info(`URI does${res ? "" : " not"} match filter`)
+	logger.info(`URI does${res ? "" : " not"} match filter [${filters}]`)
 	return res;
 }
 
