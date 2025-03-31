@@ -12,6 +12,8 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				/* "--disable-extensions", */
+				"--log",
+				"debug",
 				"--extensionDevelopmentPath=${workspaceFolder}",
 				"--profile",
 				"ExtensionHost Testing",
