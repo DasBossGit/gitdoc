@@ -250,8 +250,8 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "webpack --mode production",
-    "compile": "webpack --mode production",
+    "vscode:prepublish": "webpack --mode development",
+    "compile": "webpack --mode development",
     "watch": "webpack --watch --mode development",
     "package": "vsce package"
   },
