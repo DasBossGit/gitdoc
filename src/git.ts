@@ -121,7 +121,7 @@ export async function getMainRepository(): Promise<Repository | undefined> {
         throw 3
       }
 
-      if (workspaceRoot.fsPath != mainRepo.)
+      if (workspaceRoot.fsPath != git.repositories.)
 
     }
   } catch (e) {
