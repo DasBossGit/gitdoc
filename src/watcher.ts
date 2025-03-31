@@ -234,8 +234,13 @@ export async function commit(repository: Repository, message?: string) {
 		const changedUris = changes
 			.filter((change) => matches(change.uri))
 			.filter((change) => {
-
-				change.uri.path.split("(\\|/)+")
+				const uri = change.uri;
+				logger.info("Checking if change uri matches any exclude filter")
+				filters.some((filter) => {
+					logger.trace(`Matching "${filter}" against URI [${uri.path} | ${uri.fsPath}] `)
+					minimatch(uri.path, filter, { dot: true }) ||
+						minimatch(uri.fsPath, filter, { dot: true })
+				})
 			})
 			.map((change) => change.uri);
 

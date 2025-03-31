@@ -87,7 +87,7 @@ export default {
       logger.update_is_trace(value);
       logger.info("Full trace logging is now", value ? "enabled" : "disabled");
     } */
-  get excludeFilters(): Array<String> {
+  get excludeFilters(): Array<string> {
     return config().get("filter.exclude", []);
   }
 };
