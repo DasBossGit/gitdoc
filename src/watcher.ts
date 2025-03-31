@@ -104,7 +104,8 @@ function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive
 	const opt = { dot: true, nocase: !case_sensitive, partial: partial }
 
 	var res = (filters.some((predicate) => {
-		console.error(uri.path, predicate, opt)
+		console.error(uri.path, predicate, opt, minimatch.match([uri.path], predicate, opt))
+		console.error(uri.fsPath, predicate, opt, minimatch.match([uri.fsPath], predicate, opt))
 		return minimatch.match([uri.path, uri.fsPath], predicate, opt)
 	}));
 
