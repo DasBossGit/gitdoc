@@ -59,7 +59,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		logger.info("Starting GitDoc...");
 		ensureStatusBarItem();
 		updateContext(true, false);
-		watchForChanges(git);
 		logger.info("GitDoc watching for changes");
 	}
 }
