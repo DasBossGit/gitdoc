@@ -103,7 +103,7 @@ function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive
 			minimatch(uri.fsPath, predicate, { dot: true, nocase: !case_sensitive })
 	}));
 
-	logger.info(`URI does${res ? "" : " not"} match the predicate`)
+	logger.info(`URI does${res ? "" : " not"} match filter`)
 	return res;
 }
 
@@ -438,7 +438,7 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 
 	disposables.push(
 		vscode.window.onDidChangeActiveTextEditor((editor) => {
-			if (editor && matches(editor.document.uri)) {
+			if (editor && matches(editor.document.uri, config.filePattern)) {
 				statusBarItem?.show();
 			} else {
 				statusBarItem?.hide();
@@ -448,7 +448,7 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 
 	if (
 		vscode.window.activeTextEditor &&
-		matches(vscode.window.activeTextEditor.document.uri)
+		matches(vscode.window.activeTextEditor.document.uri, config.filePattern)
 	) {
 		statusBarItem?.show();
 	} else {
