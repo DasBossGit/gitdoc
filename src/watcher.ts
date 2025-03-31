@@ -234,7 +234,7 @@ export async function commit(repository: Repository, message?: string) {
 		const changedUris = changes
 			.filter((change) => matches(change.uri))
 			.filter((change) => {
-				
+				change.uri.
 			})
 			.map((change) => change.uri);
 
