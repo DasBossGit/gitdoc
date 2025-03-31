@@ -34,7 +34,7 @@
 		{
 			"label": "webpack-compile",
 			"type": "npm",
-			"script": "compile",
+			"script": "dev",
 			"problemMatcher": {
 				"base": "$ts-webpack-watch",
 				"background": {

@@ -250,9 +250,10 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "webpack --mode development",
-    "compile": "webpack --mode development",
+    "vscode:prepublish": "webpack --mode production --devtool hidden-source-map",
+    "compile": "webpack --mode production --devtool hidden-source-map",
     "watch": "webpack --watch --mode development",
+    "dev": "webpack --mode development",
     "package": "vsce package"
   },
   "devDependencies": {
