@@ -101,7 +101,7 @@ function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive
 	const opt = { dot: true, nocase: !case_sensitive, partial: partial }
 
 	var res = filters.some((predicate) => {
-		return (minimatch.match([uri.path, uri.fsPath, vscode.workspace.asRelativePath(uri.path, false), vscode.workspace.asRelativePath(uri.fsPath, false)], predicate, opt).length > 0)
+		return (minimatch.match([uri.path, uri.fsPath, vscode.workspace.asRelativePath(uri.path, false), vscode.workspace.asRelativePath(uri.fsPath, false), vscode.workspace.asRelativePath(uri.path, true), vscode.workspace.asRelativePath(uri.fsPath, true)], predicate, opt).length > 0)
 	});
 
 	logger.info(`URI does${res ? "" : " not"} match filter [${filters}]`)
