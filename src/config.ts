@@ -89,5 +89,8 @@ export default {
     } */
   get excludeFilters(): Array<string> {
     return config().get("filter.exclude", []);
+  },
+  get excludeFiltersCaseSens(): boolean {
+    return config().get("filter.excludeCase", true);
   }
 };

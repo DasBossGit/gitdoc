@@ -87,9 +87,9 @@ async function hasRemotes(repository: Repository): Promise<boolean> {
 	return refs.some((ref) => ref.type === RefType.RemoteHead);
 }
 
-function matches(uri: vscode.Uri, filter: string | Array<string>) {
+function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive: boolean = true) {
 	logger.info(
-		`Checking if URI matches file pattern [${uri.fsPath}]...`,
+		`Checking if URI matches filter [${uri.fsPath}]...`,
 	);
 	var filters: Array<string> = [];
 	if ("string" == typeof (filter)) {
@@ -98,10 +98,13 @@ function matches(uri: vscode.Uri, filter: string | Array<string>) {
 		filters = filter;
 	}
 
-	return (filters.some((predicate) => {
-		minimatch(uri.path, predicate, { dot: true }) ||
-			minimatch(uri.fsPath, predicate, { dot: true })
+	var res = (filters.some((predicate) => {
+		minimatch(uri.path, predicate, { dot: true, nocase: !case_sensitive }) ||
+			minimatch(uri.fsPath, predicate, { dot: true, nocase: !case_sensitive })
 	}));
+
+	logger.info(`URI does${res ? "" : "not"} match the predicate`)
+	return res;
 }
 
 async function generateCommitMessage(
@@ -239,19 +242,15 @@ export async function commit(repository: Repository, message?: string) {
 		const filters = config.excludeFilters;
 
 		const changedUris = changes
-			.filter((change) => matches(change.uri))
+			.filter((change) => matches(change.uri, config.filePattern))
 			.filter((change) => {
-				const uri = change.uri;
 				logger.info("Checking if change uri matches any exclude filter")
-				filters.some((filter) => {
-					logger.trace(`Matching "${filter}" against URI [${uri.fsPath}] `)
-					let res = !(minimatch(uri.path, filter, { dot: true }) ||
-						minimatch(uri.fsPath, filter, { dot: true }));
-					logger.trace(`URI does ${res ? "" : "not "}match predicate -> ${!res ? "including" : "excluding"}`)
-					if (!res) {
-						logger.warn(`Exclude-filter [${filter}] matches URI [${uri.fsPath}]`)
-					}
-				})
+				var res = matches(change.uri, config.excludeFilters, config.excludeFiltersCaseSens);
+
+				if (!res) {
+					logger.warn(`Exclude-filter [${filter}] matches URI [${change.uri.fsPath}]`)
+				}
+				return res;
 			})
 			.map((change) => change.uri);
 
