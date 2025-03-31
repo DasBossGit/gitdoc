@@ -98,7 +98,11 @@ function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive
 		filters = filter;
 	}
 
+	console.error(filters)
+	console.error(case_sensitive)
+
 	var res = (filters.some((predicate) => {
+		console.error(uri.path, predicate)
 		minimatch(uri.path, predicate, { dot: true, nocase: !case_sensitive }) ||
 			minimatch(uri.fsPath, predicate, { dot: true, nocase: !case_sensitive })
 	}));
