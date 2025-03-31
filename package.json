@@ -188,6 +188,11 @@
           "type": "string",
           "default": null,
           "markdownDescription": "Specifies custom instructions to use when generating commit messages (e.g. use conventional commit syntax, use emojis). This setting only applies when `GitDoc > AI: Enabled` is set to `true`."
+        },
+        "gitdoc.filter.exclude": {
+          "type": "array",
+          "default": "",
+          "markdownDescription": "Add files that are excluded in addition to the default .gitignore."
         }
       }
     },
