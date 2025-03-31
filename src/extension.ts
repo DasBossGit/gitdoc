@@ -9,7 +9,7 @@ import { updateContext } from "./utils";
 import { logger } from "./logger";
 
 export async function activate(context: vscode.ExtensionContext) {
-	console.error(vscode.workspace.asRelativePath(vscode.Uri.parse("a:\\Programming\\JavaScript\\Proxmox_VM_Viewer\\bla.testfile")))
+	console.error(vscode.workspace.asRelativePath(vscode.Uri.parse("a:\\Programming\\JavaScript\\Proxmox_VM_Viewer\\bla.testfile"), true))
 
 	logger.info("Activating...");
 
