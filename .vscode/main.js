@@ -9,11 +9,19 @@ function activate(_context) {
 
    const git = extensions.getExtension("vscode.git").exports.getAPI(1);
 
+   const repo = git.repositories[0];
 
+   println(repo.state.workingTreeChanges);
+   println(repo.state.mergeChanges);
+   println(repo.state.indexChanges);
 
-   println(git.repositories);
-   println(git.repositories);
-   println(git.repositories);
+   const changes = [
+      ...repo.state.workingTreeChanges,
+      ...repo.state.mergeChanges,
+      ...repo.state.indexChanges,
+   ];
+
+   println(changes)
 }
 
 function deactivate() { }
