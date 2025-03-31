@@ -443,7 +443,7 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 
 	disposables.push(
 		vscode.window.onDidChangeActiveTextEditor((editor) => {
-			if (editor && matches(editor.document.uri, config.filePattern)) {
+			if (editor && (matches(editor.document.uri, config.filePattern) || !matches(editor.document.uri, config.excludeFilters, config.excludeFiltersCaseSense))) {
 				statusBarItem?.show();
 			} else {
 				statusBarItem?.hide();
@@ -453,7 +453,7 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 
 	if (
 		vscode.window.activeTextEditor &&
-		matches(vscode.window.activeTextEditor.document.uri, config.filePattern)
+		(matches(vscode.window.activeTextEditor.document.uri, config.filePattern) || !matches(vscode.window.activeTextEditor.document.uri, config.excludeFilters, config.excludeFiltersCaseSense))
 	) {
 		statusBarItem?.show();
 	} else {
