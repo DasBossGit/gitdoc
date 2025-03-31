@@ -433,7 +433,7 @@ let disposables: vscode.Disposable[] = [];
 export function watchForChanges(git: GitAPI): vscode.Disposable {
 	logger.debug("Starting Watcher...");
 	const commitAfterDelay = debouncedCommit(git.repositories[0]);
-	disposables.push(git.repositories[0].state.onDidChange(commitAfterDelay));
+	disposables.push(git.repositories[0].state?.onDidChange(commitAfterDelay));
 
 	ensureStatusBarItem();
 
