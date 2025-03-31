@@ -194,7 +194,12 @@
           "items": {
             "type": "string"
           },
-          "markdownDescription": "Add files that are excluded in addition to the default .gitignore."
+          "markdownDescription": "Add globs that are excluded in addition to the default .gitignore."
+        },
+        "gitdoc.filter.excludeCaseSensitive": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "If exclude-filters should math the paths in a case-sensitive manner"
         }
       }
     },
