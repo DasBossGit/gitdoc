@@ -7,6 +7,7 @@ import { store } from "./store";
 import { commit, watchForChanges, ensureStatusBarItem } from "./watcher";
 import { updateContext } from "./utils";
 import { logger } from "./logger";
+import { minimatch } from "minimatch";
 
 export async function activate(context: vscode.ExtensionContext) {
 	logger.info("Activating...");
