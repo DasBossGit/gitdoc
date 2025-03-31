@@ -7,8 +7,12 @@ import { store } from "./store";
 import { commit, watchForChanges, ensureStatusBarItem } from "./watcher";
 import { updateContext } from "./utils";
 import { logger } from "./logger";
+import { minimatch } from "minimatch";
 
 export async function activate(context: vscode.ExtensionContext) {
+	console.error(minimatch.match(["/a:/Programming/JavaScript/gitdoc/src/extension.ts"], "**/*.ts", { dot: true, nocase: true, partial: true }));
+
+
 	logger.info("Activating...");
 
 	const git = await getGitApi();
