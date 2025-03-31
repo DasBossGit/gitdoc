@@ -4,10 +4,10 @@
 /// <reference path="A:/Programming/JavaScript/gitdoc/node_modules/.pnpm/@types+minimatch@3.0.5/node_modules/@types/minimatch/index.d.ts" />
 
 const { match } = require("minimatch");
-/* const { matchesGlobPath } = require("path");
-const { matchesGlobPosix } = require("posix");
-const { matchesGlobWin } = require("win32");
- */
+const path = require("path");
+const { matchesGlob } = require("path");
+
+
 //  @ts-check
 //  API: https://code.visualstudio.com/api/references/vscode-api
 
@@ -34,11 +34,11 @@ function activate(_context) {
          .map((change) => change.uri);
 
       println(changedUris) */
-   let hay = "a:\\Programming\\JavaScript\\Proxmox_VM_Viewer\\bla.testfile";
+   let hay = "a:\\Programming\\JavaScript\\Proxmox_VM_Viewer\\bla.testfile" as path;
    let needle = ".testfile"
-   println(match(hay, needle))
-   println(matchesGlobPath(hay, needle))
-   println(matchesGlobPosix(hay, needle))
+   /* println(match(hay, needle)) */
+   println(
+      println(matchesGlobPosix(hay, needle))
    println(matchesGlobWin(hay, needle))
 }
 
