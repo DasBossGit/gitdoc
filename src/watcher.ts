@@ -254,6 +254,7 @@ export async function commit(repository: Repository, message?: string) {
 				logger.info("Checking if change uri matches any exclude filter")
 				var res = matches(change.uri, config.excludeFilters, config.excludeFiltersCaseSense);
 				if (res) {
+					console.error("Exclude filter matches")
 					var caseSense = config.excludeFiltersCaseSense;
 					excludeFilters.forEach((predicate) => {
 						(minimatch(change.uri.path, predicate, { dot: true, nocase: caseSense }) ||
