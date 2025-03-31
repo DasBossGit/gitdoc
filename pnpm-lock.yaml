@@ -17,6 +17,9 @@ importers:
       mobx:
         specifier: ^5.15.7
         version: 5.15.7
+      winston:
+        specifier: ^3.17.0
+        version: 3.17.0
       winston-transport-vscode:
         specifier: ^0.1.0
         version: 0.1.0(winston@3.17.0)

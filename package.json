@@ -254,7 +254,7 @@
     "compile": "webpack --mode production --devtool hidden-source-map",
     "watch": "webpack --watch --mode development",
     "dev": "webpack --mode development",
-    "package": "vsce package"
+    "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
     "@types/debounce": "^1.2.4",
@@ -272,6 +272,7 @@
     "luxon": "^2.5.2",
     "minimatch": "10.0.1",
     "mobx": "^5.15.7",
+    "winston": "^3.17.0",
     "winston-transport-vscode": "^0.1.0"
   },
   "extensionDependencies": [

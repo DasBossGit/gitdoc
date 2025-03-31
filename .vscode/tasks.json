@@ -33,8 +33,13 @@
 		},
 		{
 			"label": "webpack-compile",
-			"type": "npm",
-			"script": "dev",
+			"type": "process",
+			"command": "pnpm",
+			"args": [
+				"vsce",
+				"package",
+				"--no-dependencies"
+			],
 			"problemMatcher": {
 				"base": "$ts-webpack-watch",
 				"background": {
@@ -52,7 +57,7 @@
 			},
 			"isBackground": true,
 			"presentation": {
-				"reveal": "never"
+				"reveal": "always"
 			},
 			"group": {
 				"kind": "build",
