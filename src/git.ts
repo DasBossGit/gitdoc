@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { logger } from "./logger";
+import { store } from "./store";
 
 interface CommitOptions {
   all?: boolean | "tracked";
@@ -86,4 +87,45 @@ export async function getGitApi(): Promise<GitAPI | undefined> {
   }
 
   return extension.exports.getAPI(1);
+}
+
+export async function getMainRepository(): Promise<Repository | undefined> {
+  const git = await getGitApi();
+  try {
+    if (git) {
+      const repositories = git?.repositories;
+
+      if (repositories?.length < 1) {
+        logger.error("Not git repository found. Disabling...")
+        throw 0;
+      }
+
+      const mainRepo = repositories[0];
+
+      const workspaceFolders = vscode.workspace.workspaceFolders;
+
+      if (!workspaceFolders) {
+        logger.error("No workspace active. Disabling...")
+        throw 1
+      }
+
+      if (workspaceFolders?.length > 1) {
+        logger.error("Multiple workspaces active. Only one instace of a workspace is supported. Disabling...")
+        throw 2
+      }
+
+      const workspaceRoot = workspaceFolders[0].uri;
+
+      if (!workspaceRoot) {
+        logger.error("Invalid workspace root URI. Disabling...")
+        throw 3
+      }
+
+      if (workspaceRoot.fsPath != mainRepo.)
+
+    }
+  } catch (e) {
+    store.enabled = false;
+  }
+  return
 }
