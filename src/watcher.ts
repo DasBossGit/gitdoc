@@ -229,8 +229,13 @@ export async function commit(repository: Repository, message?: string) {
 
 		logger.trace("Fetching changes from repository...");
 
+		const filters = config.excludeFilters;
+
 		const changedUris = changes
 			.filter((change) => matches(change.uri))
+			.filter((change) => {
+				
+			})
 			.map((change) => change.uri);
 
 		if (changedUris.length === 0) {
