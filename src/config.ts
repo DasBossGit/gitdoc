@@ -90,7 +90,7 @@ export default {
   get excludeFilters(): Array<string> {
     return config().get("filter.exclude", []);
   },
-  get excludeFiltersCaseSens(): boolean {
+  get excludeFiltersCaseSense(): boolean {
     return config().get("filter.excludeCase", true);
   }
 };

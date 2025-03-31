@@ -239,18 +239,22 @@ export async function commit(repository: Repository, message?: string) {
 
 		logger.trace("Fetching changes from repository...");
 
-		const filters = config.excludeFilters;
+		const excludeFilters = config.excludeFilters;
+
 
 		const changedUris = changes
 			.filter((change) => matches(change.uri, config.filePattern))
 			.filter((change) => {
 				logger.info("Checking if change uri matches any exclude filter")
-				var res = matches(change.uri, config.excludeFilters, config.excludeFiltersCaseSens);
-
-				if (!res) {
-					logger.warn(`Exclude-filter [${filter}] matches URI [${change.uri.fsPath}]`)
+				var res = matches(change.uri, config.excludeFilters, config.excludeFiltersCaseSense);
+				if (res) {
+					var caseSense = config.excludeFiltersCaseSense;
+					excludeFilters.forEach((predicate) => {
+						(minimatch(change.uri.path, predicate, { dot: true, nocase: caseSense }) ||
+							minimatch(change.uri.path, predicate, { dot: true, nocase: caseSense }) ? (logger.warn(`Exclude-filter [${predicate}] matches URI [${change.uri.fsPath}]`)) : false)
+					})
 				}
-				return res;
+				return !res;
 			})
 			.map((change) => change.uri);
 
