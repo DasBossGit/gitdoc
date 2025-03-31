@@ -7,12 +7,13 @@
 function activate(_context) {
    output("clear");
 
-   const git = extensions.getExtension("vscode.git")
-
-   let git_ext = git.exports.getAPI(1);
+   const git = extensions.getExtension("vscode.git").exports.getAPI(1);
 
 
-   println(git_ext.repositories);
+
+   println(git.repositories);
+   println(git.repositories);
+   println(git.repositories);
 }
 
 function deactivate() { }
