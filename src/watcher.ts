@@ -4,9 +4,9 @@ import { ForcePushMode, GitAPI, Repository, RefType } from "./git";
 import { DateTime } from "luxon";
 import { store } from "./store";
 import { reaction } from "mobx";
-import * as minimatch from "minimatch";
 import { logger } from "./logger";
 import { updateContext } from "./utils";
+import { minimatch } from "minimatch";
 
 const REMOTE_NAME = "origin";
 
