@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import config from "./config";
-import { ForcePushMode, GitAPI, Repository, RefType, getGitApi } from "./git";
+import { ForcePushMode, GitAPI, Repository, RefType } from "./git";
 import { DateTime } from "luxon";
 import { store } from "./store";
 import { reaction } from "mobx";
@@ -105,8 +105,7 @@ function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive
 
 	var res = (filters.some((predicate) => {
 		console.error(uri.path, predicate, opt)
-		return (minimatch(uri.path, predicate, opt) ||
-			minimatch(uri.fsPath, predicate, opt))
+		return minimatch.match([uri.path, uri.fsPath], predicate, opt)
 	}));
 
 	logger.info(`URI does${res ? "" : " not"} match filter`)
