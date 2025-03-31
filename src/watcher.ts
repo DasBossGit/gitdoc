@@ -238,8 +238,12 @@ export async function commit(repository: Repository, message?: string) {
 				logger.info("Checking if change uri matches any exclude filter")
 				filters.some((filter) => {
 					logger.trace(`Matching "${filter}" against URI [${uri.path} | ${uri.fsPath}] `)
-					minimatch(uri.path, filter, { dot: true }) ||
-						minimatch(uri.fsPath, filter, { dot: true })
+					let res = !(minimatch(uri.path, filter, { dot: true }) ||
+						minimatch(uri.fsPath, filter, { dot: true }));
+					logger.trace(`URI does ${res ? "" : "not"} match predicate -> ${res ? "including" : "excluding"}`)
+					if (!res) {
+						logger.info("")
+					}
 				})
 			})
 			.map((change) => change.uri);
