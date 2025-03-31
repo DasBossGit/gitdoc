@@ -98,9 +98,6 @@ function matches(uri: vscode.Uri, filter: string | Array<string>, case_sensitive
 		filters = filter;
 	}
 
-	console.error(filters)
-	console.error(case_sensitive)
-
 	const opt = { dot: true, nocase: !case_sensitive, partial: partial }
 
 	var res = filters.some((predicate) => {
