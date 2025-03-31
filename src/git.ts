@@ -89,7 +89,7 @@ export async function getGitApi(): Promise<GitAPI | undefined> {
   return extension.exports.getAPI(1);
 }
 
-export async function getMainRepository(): Promise<Repository | undefined> {
+/* export async function getMainRepository(): Promise<Repository | undefined> {
   const git = await getGitApi();
   try {
     if (git) {
@@ -128,4 +128,4 @@ export async function getMainRepository(): Promise<Repository | undefined> {
     store.enabled = false;
   }
   return
-}
+} */
