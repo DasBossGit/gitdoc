@@ -242,7 +242,7 @@ export async function commit(repository: Repository, message?: string) {
 						minimatch(uri.fsPath, filter, { dot: true }));
 					logger.trace(`URI does ${res ? "" : "not"} match predicate -> ${res ? "including" : "excluding"}`)
 					if (!res) {
-						logger.info("")
+						logger.info(`Exclude-filter [${filter}] matches URI [${uri.path}]`)
 					}
 				})
 			})
