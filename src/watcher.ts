@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import config from "./config";
-import { ForcePushMode, GitAPI, Repository, RefType } from "./git";
+import { ForcePushMode, GitAPI, Repository, RefType, getGitApi } from "./git";
 import { DateTime } from "luxon";
 import { store } from "./store";
 import { reaction } from "mobx";
@@ -234,7 +234,8 @@ export async function commit(repository: Repository, message?: string) {
 		const changedUris = changes
 			.filter((change) => matches(change.uri))
 			.filter((change) => {
-				change.uri.
+
+				change.uri.path.split("(\\|/)+")
 			})
 			.map((change) => change.uri);
 
