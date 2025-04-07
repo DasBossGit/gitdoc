@@ -14,11 +14,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	const git = await getGitApi();
 	if (!git) {
 		logger.error(
-			"VSCode internal Git extension not found. This is a bug."
+			"VSCode internal Git extension not found. This is a bug or VSCode / Git is very outdated."
 		);
 		return;
 	}
 
+	store.context = context;
 
 	// Initialize the store based on the
 	// user/workspace configuration.
@@ -57,8 +58,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 	if (store.enabled) {
 		logger.info("Starting GitDoc...");
+		await checkEnabled(git);
 		ensureStatusBarItem();
-		updateContext(true, false);
 		logger.info("GitDoc watching for changes");
 	}
 }

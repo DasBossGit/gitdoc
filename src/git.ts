@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { logger } from "./logger";
-import { store } from "./store";
 
 interface CommitOptions {
   all?: boolean | "tracked";
@@ -121,8 +120,10 @@ export async function getGitApi(): Promise<GitAPI | undefined> {
         throw 3
       }
 
-      if (workspaceRoot.fsPath != git.repositories.)
-
+      if (workspaceRoot.fsPath != git.repositories[0].state.HEAD?.name) {
+        logger.error("Invalid workspace root URI. Disabling...")
+        throw 4
+      }
     }
   } catch (e) {
     store.enabled = false;
