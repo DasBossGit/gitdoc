@@ -376,7 +376,7 @@ export async function commit(repository: Repository, message?: string) {
 }
 
 // TODO: Clear the timeout when GitDoc is disabled.
-function debounce(fn: Function, delay: number) {
+function debounce(fn: Function, delay: number, origin?: string) {
 	let timeout: NodeJS.Timeout | null = null;
 
 	logger.debug("Creating new debounced function...");
@@ -389,8 +389,7 @@ function debounce(fn: Function, delay: number) {
 		}
 
 		logger.debug(`Setting new timeout (${delay})...`);
-		logger.trace(`Timeout-Fn: `, fn.name, fn.caller);
-		logger.trace(`Timeout-Fn Arguments: `, args);
+		logger.trace(`Timeout ${origin ? `originates from: ${origin}` : "<anonymously> provided"}`);
 		timeout = setTimeout(() => {
 			fn(...args);
 		}, delay);
@@ -398,13 +397,13 @@ function debounce(fn: Function, delay: number) {
 }
 
 const commitMap = new Map();
-function debouncedCommit(repository: Repository): () => void {
+function debouncedCommit(repository: Repository, origin?: string): () => void {
 	logger.debug("Debouncing commit...");
 	if (!commitMap.has(repository)) {
 		logger.debug("Creating new <anonym> debounced commit function...");
 		commitMap.set(
 			repository,
-			debounce(() => commit(repository), config.autoCommitDelay)
+			debounce(() => commit(repository), config.autoCommitDelay, origin)
 		);
 	}
 
@@ -435,7 +434,7 @@ let disposables: vscode.Disposable[] = [];
 export function watchForChanges(git: GitAPI): vscode.Disposable {
 	logger.debug("Starting Watcher...");
 
-	const commitAfterDelay = debouncedCommit(git.repositories[0]);
+	const commitAfterDelay = debouncedCommit(git.repositories[0], "watchForChanges @ watcher.ts:437");
 
 	disposables.push(git.repositories[0].state?.onDidChange(commitAfterDelay));
 
