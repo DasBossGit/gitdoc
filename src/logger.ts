@@ -3,8 +3,6 @@ import * as winston from "winston";
 import * as winstonTransportVscode from "winston-transport-vscode";
 import { EXTENSION_LOG_FMT, EXTENSION_NAME } from "./constants";
 import { store } from "./store";
-import Transport = require('winston-transport');
-import util = require('util');
 
 class Logger {
     private logger: winston.Logger;
