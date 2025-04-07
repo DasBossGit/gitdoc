@@ -434,8 +434,7 @@ let disposables: vscode.Disposable[] = [];
 export function watchForChanges(git: GitAPI): vscode.Disposable {
 	logger.debug("Starting Watcher...");
 
-	
-	const commitAfterDelay = debouncedCommit(git.repositories[0], "watchForChanges @ watcher.ts:437");
+	const commitAfterDelay = debouncedCommit(git.repositories[0], `watchForChanges @ watcher.ts:${getCurrentLine()}`);
 
 	disposables.push(git.repositories[0].state?.onDidChange(commitAfterDelay));
 
@@ -531,4 +530,12 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 			disposables = [];
 		},
 	};
+}
+
+function getCurrentLine(nullUnknown: boolean = true): string | null {
+	const err = new Error();
+	const stackLine = err.stack?.split('\n')[2] || '';
+	// Extract line number from stack trace (browser/environment dependent)
+	const lineMatch = stackLine.match(/:(\d+):\d+/);
+	return lineMatch ? lineMatch[1] : nullUnknown ? null : 'unknown';
 }
