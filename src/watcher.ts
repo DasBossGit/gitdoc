@@ -517,9 +517,11 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 	// Check if the repository currently has uncommitted changes
 	if (git.repositories[0].state.workingTreeChanges.length > 0) {
 		logger.debug("Repository has uncommitted changes, committing...");
+		vscode.extensions.
+
 		setTimeout(() => {
 			commit(git.repositories[0]);
-		}, 1000);
+		}, );
 	}
 
 	return {
