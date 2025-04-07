@@ -518,10 +518,10 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 	// Check if the repository currently has uncommitted changes
 	if (git.repositories[0].state.workingTreeChanges.length > 0) {
 		logger.info("Repository has uncommitted changes, committing after 15 second delay...");
-		// Commit the changes after a delay of 15 seconds
+		// Commit the changes after a delay of 45 seconds
 		setTimeout(() => {
 			commit(git.repositories[0]);
-		}, 15000);
+		}, 45000);
 	}
 
 	return {
