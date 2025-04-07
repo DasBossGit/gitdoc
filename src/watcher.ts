@@ -396,7 +396,7 @@ function debounce(fn: Function, delay: number) {
 }
 
 const commitMap = new Map();
-function debouncedCommit(repository: Repository) {
+function debouncedCommit(repository: Repository): () => void {
 	logger.debug("Debouncing commit...");
 	if (!commitMap.has(repository)) {
 		logger.debug("Creating new <anonym> debounced commit function...");
