@@ -389,6 +389,8 @@ function debounce(fn: Function, delay: number) {
 		}
 
 		logger.debug(`Setting new timeout (${delay})...`);
+		logger.trace(`Timeout-Fn: `, fn.name, fn.caller);
+		logger.trace(`Timeout-Fn Arguments: `, args);
 		timeout = setTimeout(() => {
 			fn(...args);
 		}, delay);
