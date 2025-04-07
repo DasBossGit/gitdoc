@@ -434,6 +434,7 @@ let disposables: vscode.Disposable[] = [];
 export function watchForChanges(git: GitAPI): vscode.Disposable {
 	logger.debug("Starting Watcher...");
 
+	
 	const commitAfterDelay = debouncedCommit(git.repositories[0], "watchForChanges @ watcher.ts:437");
 
 	disposables.push(git.repositories[0].state?.onDidChange(commitAfterDelay));
