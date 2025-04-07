@@ -513,6 +513,13 @@ export function watchForChanges(git: GitAPI): vscode.Disposable {
 	}
 
 	logger.debug("Watcher started");
+
+	// Check if the repository currently has uncommitted changes
+	if (git.repositories[0].state.workingTreeChanges.length > 0) {
+		logger.debug("Repository has uncommitted changes, committing...");
+		commit(git.repositories[0]);
+	}
+
 	return {
 		dispose: () => {
 			disposables.forEach((disposable) => disposable.dispose());
