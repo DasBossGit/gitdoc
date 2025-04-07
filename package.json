@@ -4,7 +4,7 @@
   "publisher": "DasBossGit",
   "icon": "images/icon.png",
   "description": "Automatically commit/push/pull changes on save, so you can edit a Git repo like a multi-file, versioned document.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "extensionKind": [
     "workspace"
   ],
