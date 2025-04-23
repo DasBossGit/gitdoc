@@ -94,6 +94,11 @@ export function registerCommands(context: vscode.ExtensionContext) {
 		registerCommand("ai.availableModels", async () => {
 			try {
 				const models = await vscode.lm.selectChatModels()
+				if (models.length === 0) {
+					vscode.window.showInformationMessage("No AI models available.");
+					return;
+				}
+				vscode.window.createQuickPick()
 			} catch (error) {
 				logger.error("Error fetching AI models:", error);
 				vscode.window.showErrorMessage("Failed to fetch AI models. Please try again later.");
