@@ -110,7 +110,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
 				})).sort((a, b) => a.label.localeCompare(b.label));
 				items.find((item) => item.label == config.aiModel)!.picked = true // Set the default selected item to the current model;
 				quickPick.items = items;
-				quickPick.onDid((selection) => {
+				quickPick.onDidChangeSelection((selection) => {
 					if (selection[0]) {
 						quickPick.value = selection[0].label;
 						config.aiModel = selection[0].label;
