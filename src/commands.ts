@@ -98,7 +98,11 @@ export function registerCommands(context: vscode.ExtensionContext) {
 					vscode.window.showInformationMessage("No AI models available.");
 					return;
 				}
-				vscode.window.createQuickPick()
+				const quickPick = vscode.window.createQuickPick();
+				quickPick.title = "Available AI Models";
+				quickPick.canSelectMany = false;
+				quickPick.
+
 			} catch (error) {
 				logger.error("Error fetching AI models:", error);
 				vscode.window.showErrorMessage("Failed to fetch AI models. Please try again later.");
