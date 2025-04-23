@@ -104,8 +104,9 @@ export function registerCommands(context: vscode.ExtensionContext) {
 				quickPick.placeholder = 'Select an AI model';
 				quickPick.items = models.map((model) => ({
 					label: model.name,
-					description: model.description,
+					description: `${model.family} by ${model.vendor} [v${model.version}]`,
 					detail: model.id,
+					
 				}));
 
 
