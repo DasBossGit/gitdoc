@@ -111,8 +111,8 @@ export function registerCommands(context: vscode.ExtensionContext) {
 					description: `${model.family} by ${model.vendor} [v${model.version}]`,
 					detail: model.id,
 				})).sort((a, b) => a.label.localeCompare(b.label));
-				const currentSelection = config.aiModel;
-				items.find((item) => item.label. == config.aiModel)!.picked = true // Set the default selected item to the current model;
+				const currentSelection = config.aiModel.toLowerCase();
+				(items.find((item) => (item.label.toLowerCase() == currentSelection) || (item.detail?.toLowerCase() == currentSelection)) || items[0]).picked = true // Set the default selected item to the current model;
 				quickPick.items = items;
 				quickPick.onDidChangeSelection((selection) => {
 					if (selection[0]) {
