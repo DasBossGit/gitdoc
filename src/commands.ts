@@ -118,7 +118,7 @@ export function registerCommands(context: vscode.ExtensionContext) {
 					if (selection[0]) {
 						logger.info("Selected AI model:", selection[0].label);
 						quickPick.value = selection[0].label;
-						config.aiModel = selection[0].label;
+						config.aiModel = selection[0].detail;
 						quickPick.hide();
 						vscode.window.showInformationMessage(`AI model set to ${selection[0].label}`);
 					}
