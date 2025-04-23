@@ -101,7 +101,13 @@ export function registerCommands(context: vscode.ExtensionContext) {
 				const quickPick = vscode.window.createQuickPick();
 				quickPick.title = "Available AI Models";
 				quickPick.canSelectMany = false;
-				quickPick.
+				quickPick.placeholder = 'Select an AI model';
+				quickPick.items = models.map((model) => ({
+					label: model.name,
+					description: model.description,
+					detail: model.id,
+				}));
+
 
 			} catch (error) {
 				logger.error("Error fetching AI models:", error);
