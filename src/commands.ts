@@ -92,11 +92,14 @@ export function registerCommands(context: vscode.ExtensionContext) {
 			}
 		});
 
+		logger.debug("Registering 'ai.availableModels' command...");
 		registerCommand("ai.availableModels", async () => {
 			try {
+				logger.trace("Fetching available AI models...");
 				const models = await vscode.lm.selectChatModels()
 				if (models.length === 0) {
 					vscode.window.showInformationMessage("No AI models available.");
+					logger.trace("No AI models available.");
 					return;
 				}
 				const quickPick = vscode.window.createQuickPick();
@@ -112,12 +115,18 @@ export function registerCommands(context: vscode.ExtensionContext) {
 				quickPick.items = items;
 				quickPick.onDidChangeSelection((selection) => {
 					if (selection[0]) {
+						logger.info("Selected AI model:", selection[0].label);
 						quickPick.value = selection[0].label;
 						config.aiModel = selection[0].label;
 						quickPick.hide();
+						vscode.window.showInformationMessage(`AI model set to ${selection[0].label}`);
 					}
 				});
-
+				quickPick.onDidHide(() => {
+					quickPick.dispose()
+					logger.trace("AI Selection Quick pick disposed.");
+				});
+				quickPick.show();
 			} catch (error) {
 				logger.error("Error fetching AI models:", error);
 				vscode.window.showErrorMessage("Failed to fetch AI models. Please try again later.");
