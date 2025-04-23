@@ -90,6 +90,15 @@ export function registerCommands(context: vscode.ExtensionContext) {
 				await commit(git.repositories[0]);
 			}
 		});
+
+		registerCommand("ai.availableModels", async () => {
+			try {
+				const models = await vscode.lm.selectChatModels()
+			} catch (error) {
+				logger.error("Error fetching AI models:", error);
+				vscode.window.showErrorMessage("Failed to fetch AI models. Please try again later.");
+			}
+		});
 	} catch (error) {
 		logger.error("Error registering commands:", error);
 		throw error;

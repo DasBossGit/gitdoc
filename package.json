@@ -4,7 +4,7 @@
 	"publisher": "DasBossGit",
 	"icon": "images/icon.png",
 	"description": "Automatically commit/push/pull changes on save, so you can edit a Git repo like a multi-file, versioned document.",
-	"version": "0.3.1-4",
+	"version": "0.3.1-5",
 	"extensionKind": [
 		"workspace"
 	],
@@ -42,19 +42,27 @@
 			},
 			{
 				"command": "gitdoc.restoreVersion",
-				"title": "Restore Version"
+				"title": "Restore Version",
+				"category": "GitDoc"
 			},
 			{
 				"command": "gitdoc.squashVersions",
-				"title": "Squash Version(s) Above"
+				"title": "Squash Version(s) Above",
+				"category": "GitDoc"
 			},
 			{
 				"command": "gitdoc.undoVersion",
-				"title": "Undo Version"
+				"title": "Undo Version",
+				"category": "GitDoc"
 			},
 			{
 				"command": "gitdoc.commit",
 				"title": "Commit",
+				"category": "GitDoc"
+			},
+			{
+				"command": "gitdoc.ai.availableModels",
+				"title": "List available Models",
 				"category": "GitDoc"
 			}
 		],
