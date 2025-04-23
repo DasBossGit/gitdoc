@@ -114,11 +114,19 @@ export function registerCommands(context: vscode.ExtensionContext) {
 				const currentSelection = config.aiModel.toLowerCase();
 				(items.find((item) => (item.label.toLowerCase() == currentSelection) || (item.detail?.toLowerCase() == currentSelection)) || items[0]).picked = true // Set the default selected item to the current model;
 				quickPick.items = items;
-				quickPick.onDidChangeSelection((selection) => {
+				quickPick.onDidChangeSelection(async (selection) => {
 					if (selection[0]) {
 						logger.info("Selected AI model:", selection[0].label);
 						quickPick.value = selection[0].label;
-						config.aiModel = selection[0].detail;
+						const selected = selection[0].detail || await vscode.lm.selectChatModels().then((models) => {
+							models.find((model) => model.name == selection[0].label)?.id
+						});
+						if (!selected) {
+							logger.error("Error selecting AI model:", selection[0].label);
+							vscode.window.showErrorMessage("Failed to select AI model. Please try again later.");
+							return;
+						}
+						config.aiModel = selected;
 						quickPick.hide();
 						vscode.window.showInformationMessage(`AI model set to ${selection[0].label}`);
 					}
