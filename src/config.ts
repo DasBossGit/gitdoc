@@ -73,6 +73,9 @@ export default {
   get aiModel() {
     return config().get("ai.model", "gpt-4o");
   },
+  set aiModel(label: string) {
+    config().update("ai.model", label, vscode.ConfigurationTarget.Workspace);
+  },
   get aiCustomInstructions() {
     return config().get("ai.customInstructions", null);
   },

@@ -4,6 +4,7 @@ import { getGitApi } from "./git";
 import { updateContext } from "./utils";
 import { commit } from "./watcher";
 import { logger } from "./logger";
+import config from "./config";
 
 interface GitTimelineItem {
 	message: string;
@@ -102,13 +103,20 @@ export function registerCommands(context: vscode.ExtensionContext) {
 				quickPick.title = "Available AI Models";
 				quickPick.canSelectMany = false;
 				quickPick.placeholder = 'Select an AI model';
-				quickPick.items = models.map((model) => ({
+				const items: vscode.QuickPickItem[] = models.map((model) => ({
 					label: model.name,
 					description: `${model.family} by ${model.vendor} [v${model.version}]`,
 					detail: model.id,
-					
-				}));
-
+				})).sort((a, b) => a.label.localeCompare(b.label));
+				items.find((item) => item.label == config.aiModel)!.picked = true // Set the default selected item to the current model;
+				quickPick.items = items;
+				quickPick.onDid((selection) => {
+					if (selection[0]) {
+						quickPick.value = selection[0].label;
+						config.aiModel = selection[0].label;
+						quickPick.hide();
+					}
+				});
 
 			} catch (error) {
 				logger.error("Error fetching AI models:", error);
